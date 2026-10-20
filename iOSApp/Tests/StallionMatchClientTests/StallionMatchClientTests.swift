@@ -148,12 +148,12 @@ final class StallionMatchClientTests: XCTestCase {
         let discoverVM = DiscoverViewModel(apiClient: mockClient)
         await discoverVM.loadCards(activeHorseID: createdHorse.id, reset: true)
         XCTAssertEqual(discoverVM.state, .loaded)
-        XCTAssertEqual(discoverVM.cards.count, 3)
+        XCTAssertEqual(discoverVM.cards.count, MockSampleData.discoveryHorses.count)
 
         let targetHorse = try XCTUnwrap(discoverVM.cards.first)
         await discoverVM.swipe(on: targetHorse, direction: .like, activeHorseID: createdHorse.id)
         XCTAssertNotNil(discoverVM.celebratedMatch)
-        XCTAssertEqual(discoverVM.cards.count, 2)
+        XCTAssertEqual(discoverVM.cards.count, MockSampleData.discoveryHorses.count - 1)
 
         // 4. Verify chat view model sends messages and blocks objectionable content
         let chatVM = ChatDetailViewModel(

@@ -24,5 +24,6 @@ xcuserdata/
 *.key
 
 # Local Storage Uploads (Dev)
-Server/Public/uploads/
+Server/Public/uploads/*
+!Server/Public/uploads/demo/
 Server/Storage/

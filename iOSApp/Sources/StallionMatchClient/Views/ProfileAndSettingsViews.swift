@@ -16,110 +16,282 @@ public struct ProfileAndSettingsScreen: View {
 
     public var body: some View {
         NavigationStack {
-            List {
-                if let user = appState.currentUser {
-                    Section("Owner / Handler Account") {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(user.displayName ?? "Horse Handler")
-                                .font(.headline)
-                            Text(user.email)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+            ScrollView {
+                VStack(spacing: 18) {
+                    // Tinder-style Profile Hero Card
+                    VStack(spacing: 12) {
+                        ZStack(alignment: .bottomTrailing) {
+                            HorsePhotoView(
+                                horseName: appState.activeHorse?.name ?? "Apollo",
+                                photoURL: appState.activeHorse?.photos.first?.url,
+                                photoIndex: 0
+                            )
+                            .frame(width: 112, height: 112)
+                            .clipShape(Circle())
+                            .overlay(
+                                Circle()
+                                    .stroke(EquestrianTheme.brandGradient, lineWidth: 4)
+                            )
+                            .shadow(color: EquestrianTheme.tinderRed.opacity(0.28), radius: 12, x: 0, y: 6)
+
+                            if let active = appState.activeHorse {
+                                Button {
+                                    horseBeingEdited = active
+                                } label: {
+                                    Image(systemName: "pencil")
+                                        .font(.system(size: 13, weight: .bold))
+                                        .foregroundStyle(.white)
+                                        .frame(width: 32, height: 32)
+                                        .background(Circle().fill(EquestrianTheme.brandGradient))
+                                        .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+
+                        if let active = appState.activeHorse {
+                            Text("\(active.name), \(active.age)")
+                                .font(.title2.weight(.heavy))
+                                .foregroundStyle(EquestrianTheme.charcoalText)
+                            Text("\(active.breed) • \(active.location.city)")
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(EquestrianTheme.slateSecondary)
+                        }
+
+                        if let user = appState.currentUser {
+                            HStack(spacing: 6) {
+                                Image(systemName: "person.crop.circle.badge.checkmark")
+                                    .foregroundStyle(EquestrianTheme.tinderRed)
+                                Text("Handler: \(user.displayName ?? "Horse Owner") (\(user.email))")
+                                    .font(.caption.weight(.medium))
+                                    .foregroundStyle(EquestrianTheme.slateSecondary)
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Capsule().fill(EquestrianTheme.softRoseTint))
                         }
                     }
-                }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 22)
+                    .background(
+                        RoundedRectangle(cornerRadius: 24)
+                            .fill(Color.white)
+                            .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 4)
+                    )
 
-                Section("My Horses") {
-                    ForEach(appState.myHorses) { horse in
+                    // My Horses Section
+                    VStack(alignment: .leading, spacing: 12) {
                         HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                HStack {
-                                    Text(horse.name)
-                                        .font(.headline)
-                                    if appState.activeHorse?.id == horse.id {
-                                        Text("Active")
-                                            .font(.caption2.weight(.bold))
-                                            .padding(.horizontal, 7)
-                                            .padding(.vertical, 2)
-                                            .background(Capsule().fill(EquestrianTheme.pastureSage.opacity(0.2)))
-                                            .foregroundStyle(EquestrianTheme.pastureSage)
-                                    }
-                                }
-                                Text("\(horse.age)yo \(horse.breed) \(horse.sex.displayName) • \(horse.location.city)")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
+                            Text("MY HORSES")
+                                .font(.caption.weight(.heavy))
+                                .tracking(1)
+                                .foregroundStyle(EquestrianTheme.tinderRed)
                             Spacer()
-                            Button("Edit") {
-                                horseBeingEdited = horse
+                            Button {
+                                showCreateHorseSheet = true
+                            } label: {
+                                Label("Add Horse", systemImage: "plus")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(Capsule().fill(EquestrianTheme.brandGradient))
                             }
-                            .buttonStyle(.bordered)
+                            .buttonStyle(.plain)
+                            .accessibilityIdentifier("addHorseProfileButton")
+                        }
+
+                        ForEach(appState.myHorses) { horse in
+                            let isActive = (appState.activeHorse?.id == horse.id)
+                            HStack(spacing: 12) {
+                                HorsePhotoView(
+                                    horseName: horse.name,
+                                    photoURL: horse.photos.first?.url,
+                                    photoIndex: 0
+                                )
+                                .frame(width: 56, height: 56)
+                                .clipShape(Circle())
+                                .overlay(
+                                    Circle().stroke(
+                                        isActive ? EquestrianTheme.tinderRed : Color.clear,
+                                        lineWidth: 2.5
+                                    )
+                                )
+
+                                VStack(alignment: .leading, spacing: 3) {
+                                    HStack(spacing: 6) {
+                                        Text(horse.name)
+                                            .font(.headline.weight(.bold))
+                                            .foregroundStyle(EquestrianTheme.charcoalText)
+                                        if isActive {
+                                            Text("ACTIVE")
+                                                .font(.system(size: 9, weight: .heavy))
+                                                .padding(.horizontal, 7)
+                                                .padding(.vertical, 3)
+                                                .background(Capsule().fill(EquestrianTheme.brandGradient))
+                                                .foregroundStyle(.white)
+                                        }
+                                    }
+                                    Text("\(horse.age)yo \(horse.breed) \(horse.sex.displayName) • \(horse.location.city)")
+                                        .font(.caption)
+                                        .foregroundStyle(EquestrianTheme.slateSecondary)
+                                }
+
+                                Spacer()
+
+                                if !isActive {
+                                    Button("Use") {
+                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                            appState.activeHorseID = horse.id
+                                        }
+                                    }
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(EquestrianTheme.tinderRed)
+                                    .buttonStyle(.plain)
+                                }
+
+                                Button("Edit") {
+                                    horseBeingEdited = horse
+                                }
+                                .font(.caption.weight(.bold))
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Capsule().fill(EquestrianTheme.softRoseTint))
+                                .foregroundStyle(EquestrianTheme.tinderRed)
+                                .buttonStyle(.plain)
+                            }
+                            .padding(12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 18)
+                                    .fill(Color.white)
+                                    .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
+                            )
                         }
                     }
 
-                    Button {
-                        showCreateHorseSheet = true
-                    } label: {
-                        Label("Add Horse Profile", systemImage: "plus.circle.fill")
-                            .foregroundStyle(EquestrianTheme.saddleBrown)
-                    }
-                    .accessibilityIdentifier("addHorseProfileButton")
-                }
+                    // Push Notifications Card
+                    if let user = appState.currentUser {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("NOTIFICATIONS")
+                                .font(.caption.weight(.heavy))
+                                .tracking(1)
+                                .foregroundStyle(EquestrianTheme.tinderRed)
 
-                if let user = appState.currentUser {
-                    Section("Push Notifications") {
-                        Toggle(
-                            "New Matches",
-                            isOn: Binding(
-                                get: { user.notificationsNewMatch },
-                                set: { newVal in
-                                    Task {
-                                        await appState.updateNotificationSettings(
-                                            newMatch: newVal,
-                                            newMessage: user.notificationsNewMessage
-                                        )
-                                    }
-                                }
+                            VStack(spacing: 12) {
+                                Toggle(
+                                    "New Matches",
+                                    isOn: Binding(
+                                        get: { user.notificationsNewMatch },
+                                        set: { newVal in
+                                            Task {
+                                                await appState.updateNotificationSettings(
+                                                    newMatch: newVal,
+                                                    newMessage: user.notificationsNewMessage
+                                                )
+                                            }
+                                        }
+                                    )
+                                )
+                                .tint(EquestrianTheme.tinderRed)
+
+                                Divider()
+
+                                Toggle(
+                                    "New Messages",
+                                    isOn: Binding(
+                                        get: { user.notificationsNewMessage },
+                                        set: { newVal in
+                                            Task {
+                                                await appState.updateNotificationSettings(
+                                                    newMatch: user.notificationsNewMatch,
+                                                    newMessage: newVal
+                                                )
+                                            }
+                                        }
+                                    )
+                                )
+                                .tint(EquestrianTheme.tinderRed)
+                            }
+                            .padding(16)
+                            .background(
+                                RoundedRectangle(cornerRadius: 18)
+                                    .fill(Color.white)
+                                    .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
                             )
-                        )
-                        Toggle(
-                            "New Messages",
-                            isOn: Binding(
-                                get: { user.notificationsNewMessage },
-                                set: { newVal in
-                                    Task {
-                                        await appState.updateNotificationSettings(
-                                            newMatch: user.notificationsNewMatch,
-                                            newMessage: newVal
-                                        )
-                                    }
-                                }
-                            )
-                        )
+                        }
                     }
-                }
 
-                Section("Safety & Legal") {
-                    Button("Terms of Use") { showTermsSheet = true }
-                    Button("Privacy Policy") { showPrivacySheet = true }
-                    AnimalWelfareNoticeBanner()
-                        .listRowInsets(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
-                }
+                    // Legal & Safety Card
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("SAFETY & LEGAL")
+                            .font(.caption.weight(.heavy))
+                            .tracking(1)
+                            .foregroundStyle(EquestrianTheme.tinderRed)
 
-                Section {
-                    Button("Log Out") {
-                        Task { await appState.logout() }
+                        HStack(spacing: 12) {
+                            Button {
+                                showTermsSheet = true
+                            } label: {
+                                Label("Terms of Use", systemImage: "doc.text.fill")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(EquestrianTheme.charcoalText)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 12)
+                                    .background(RoundedRectangle(cornerRadius: 14).fill(Color.white))
+                            }
+                            .buttonStyle(.plain)
+
+                            Button {
+                                showPrivacySheet = true
+                            } label: {
+                                Label("Privacy Policy", systemImage: "hand.raised.shield.fill")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(EquestrianTheme.charcoalText)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 12)
+                                    .background(RoundedRectangle(cornerRadius: 14).fill(Color.white))
+                            }
+                            .buttonStyle(.plain)
+                        }
+
+                        AnimalWelfareNoticeBanner()
                     }
-                    .foregroundStyle(EquestrianTheme.saddleBrown)
-                    .accessibilityIdentifier("logOutButton")
 
-                    Button("Delete Account & All Data", role: .destructive) {
-                        showDeleteConfirmation = true
+                    // Account Actions
+                    VStack(spacing: 10) {
+                        Button {
+                            Task { await appState.logout() }
+                        } label: {
+                            Text("Sign Out / Open Auth Screen")
+                                .font(.subheadline.weight(.bold))
+                                .foregroundStyle(EquestrianTheme.tinderRed)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 13)
+                                .background(
+                                    Capsule()
+                                        .fill(Color.white)
+                                        .overlay(Capsule().stroke(EquestrianTheme.tinderRed.opacity(0.35), lineWidth: 1.5))
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("logOutButton")
+
+                        Button(role: .destructive) {
+                            showDeleteConfirmation = true
+                        } label: {
+                            Text("Delete Account & All Data")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(EquestrianTheme.slateSecondary)
+                                .padding(.vertical, 6)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("deleteAccountButton")
                     }
-                    .accessibilityIdentifier("deleteAccountButton")
+                    .padding(.top, 4)
                 }
+                .padding(16)
             }
-            .navigationTitle("Profile & Settings")
+            .background(EquestrianTheme.screenBackground)
             .sheet(isPresented: $showCreateHorseSheet) {
                 NavigationStack {
                     HorseEditorSheet(appState: appState, existingHorse: nil) {}
@@ -220,6 +392,7 @@ public struct HorseEditorSheet: View {
                         "Select Horse Photos (\(currentPhotoCount)/6)",
                         systemImage: "photo.on.rectangle.angled"
                     )
+                    .foregroundStyle(EquestrianTheme.tinderRed)
                 }
             }
 
@@ -238,6 +411,7 @@ public struct HorseEditorSheet: View {
                 VStack(alignment: .leading) {
                     Text("Height: \(String(format: "%.1f", heightHands)) hands")
                     Slider(value: $heightHands, in: 8.0...19.0, step: 0.1)
+                        .tint(EquestrianTheme.tinderRed)
                 }
             }
 
@@ -396,7 +570,6 @@ public struct HorseEditorSheet: View {
                 )
             }
 
-            // Compress and upload any newly picked photos
             for item in selectedPhotoItems {
                 if let rawData = try? await item.loadTransferable(type: Data.self) {
                     let compressed = ImageCompressor.compressToJPEG(rawData)
@@ -415,8 +588,34 @@ public struct HorseEditorSheet: View {
     }
 }
 
+public enum MobileTab: Int, CaseIterable, Hashable {
+    case discover = 0
+    case matches = 1
+    case messages = 2
+    case profile = 3
+
+    public var title: String {
+        switch self {
+        case .discover: return "Discover"
+        case .matches: return "Matches"
+        case .messages: return "Messages"
+        case .profile: return "Profile"
+        }
+    }
+
+    public var iconName: String {
+        switch self {
+        case .discover: return "flame.fill"
+        case .matches: return "sparkles"
+        case .messages: return "message.fill"
+        case .profile: return "person.fill"
+        }
+    }
+}
+
 public struct MainTabView: View {
     @Bindable public var appState: AppStateViewModel
+    @State private var selectedTab: MobileTab = .discover
     @State private var discoverViewModel: DiscoverViewModel
     @State private var matchesAndConversationsViewModel: MatchesAndConversationsViewModel
 
@@ -429,29 +628,83 @@ public struct MainTabView: View {
     }
 
     public var body: some View {
-        TabView {
-            DiscoverScreen(appState: appState, viewModel: discoverViewModel)
-                .tabItem {
-                    Label("Discover", systemImage: "Copy" == "" ? "sparkles" : "figure.equestrian.sports")
+        VStack(spacing: 0) {
+            ZStack {
+                switch selectedTab {
+                case .discover:
+                    DiscoverScreen(appState: appState, viewModel: discoverViewModel)
+                        .transition(.opacity)
+                case .matches:
+                    MatchesScreen(appState: appState, viewModel: matchesAndConversationsViewModel)
+                        .transition(.opacity)
+                case .messages:
+                    MessagesScreen(appState: appState, viewModel: matchesAndConversationsViewModel)
+                        .transition(.opacity)
+                case .profile:
+                    ProfileAndSettingsScreen(appState: appState)
+                        .transition(.opacity)
                 }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            MatchesScreen(appState: appState, viewModel: matchesAndConversationsViewModel)
-                .tabItem {
-                    Label("Matches", systemImage: "heart.circle.fill")
-                }
+            // Sleek Tinder Red & White Mobile Bottom Navigation Bar
+            HStack(spacing: 0) {
+                ForEach(MobileTab.allCases, id: \.self) { tab in
+                    let isSelected = (selectedTab == tab)
+                    Button {
+                        withAnimation(.spring(response: 0.28, dampingFraction: 0.76)) {
+                            selectedTab = tab
+                        }
+                        if tab == .matches || tab == .messages {
+                            Task { await matchesAndConversationsViewModel.refreshAll() }
+                        }
+                    } label: {
+                        VStack(spacing: 4) {
+                            ZStack(alignment: .topTrailing) {
+                                Image(systemName: tab.iconName)
+                                    .font(.system(size: isSelected ? 22 : 20, weight: .bold))
+                                    .foregroundStyle(
+                                        isSelected
+                                            ? AnyShapeStyle(EquestrianTheme.brandGradient)
+                                            : AnyShapeStyle(Color.gray.opacity(0.45))
+                                    )
+                                    .scaleEffect(isSelected ? 1.12 : 1.0)
+                                    .frame(width: 36, height: 28)
 
-            MessagesScreen(appState: appState, viewModel: matchesAndConversationsViewModel)
-                .tabItem {
-                    Label("Messages", systemImage: "bubble.left.and.bubble.right.fill")
-                }
-                .badge(matchesAndConversationsViewModel.totalUnreadCount)
+                                if tab == .messages && matchesAndConversationsViewModel.totalUnreadCount > 0 {
+                                    Text("\(matchesAndConversationsViewModel.totalUnreadCount)")
+                                        .font(.system(size: 9, weight: .heavy))
+                                        .foregroundStyle(.white)
+                                        .padding(.horizontal, 5)
+                                        .padding(.vertical, 2)
+                                        .background(Capsule().fill(EquestrianTheme.brandGradient))
+                                        .offset(x: 6, y: -3)
+                                }
+                            }
 
-            ProfileAndSettingsScreen(appState: appState)
-                .tabItem {
-                    Label("Profile", systemImage: "person.crop.circle")
+                            Text(tab.title)
+                                .font(.system(size: 10, weight: isSelected ? .bold : .medium))
+                                .foregroundStyle(isSelected ? EquestrianTheme.tinderRed : Color.gray.opacity(0.6))
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("tab_\(tab.title.lowercased())")
                 }
+            }
+            .padding(.horizontal, 12)
+            .padding(.bottom, 6)
+            .background(
+                Color.white
+                    .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: -3)
+            )
         }
-        .tint(EquestrianTheme.saddleBrown)
+        .preferredColorScheme(.light)
+        .task {
+            await matchesAndConversationsViewModel.refreshAll()
+        }
     }
 }
 
@@ -470,15 +723,18 @@ public struct StallionMatchRootView: View {
                 AuthRootView(appState: appState)
             }
         }
+        .preferredColorScheme(.light)
     }
 }
 
-#Preview("Main Tab View") {
-    let client = MockAPIClient()
-    let appState = AppStateViewModel(
-        apiClient: client,
-        preauthenticatedUser: MockSampleData.currentUser,
-        initialHorses: [MockSampleData.myHorse]
-    )
-    return MainTabView(appState: appState)
+struct MainTabView_Previews: PreviewProvider {
+    static var previews: some View {
+        let client = MockAPIClient()
+        let appState = AppStateViewModel(
+            apiClient: client,
+            preauthenticatedUser: MockSampleData.currentUser,
+            initialHorses: [MockSampleData.myHorse]
+        )
+        MainTabView(appState: appState)
+    }
 }

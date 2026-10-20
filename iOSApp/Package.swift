@@ -6,7 +6,6 @@ let cltUsrLibPath = "/Library/Developer/CommandLineTools/Library/Developer/usr/l
 let xcodeFrameworksPath = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks"
 let xcodePrivateFrameworksPath = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks"
 let xcodeUsrLibPath = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib"
-let previewsPluginPath = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins/libPreviewsMacros.dylib"
 
 let package = Package(
     name: "StallionMatchApp",
@@ -34,11 +33,7 @@ let package = Package(
                 .product(name: "SharedModels", package: "SharedModels")
             ],
             swiftSettings: [
-                .enableUpcomingFeature("StrictConcurrency"),
-                .unsafeFlags([
-                    "-Xfrontend", "-load-plugin-library",
-                    "-Xfrontend", previewsPluginPath
-                ])
+                .enableUpcomingFeature("StrictConcurrency")
             ]
         ),
         .executableTarget(
@@ -64,9 +59,7 @@ let package = Package(
                     "-F\(cltFrameworksPath)",
                     "-F\(xcodeFrameworksPath)",
                     "-F\(xcodePrivateFrameworksPath)",
-                    "-I\(xcodeUsrLibPath)",
-                    "-Xfrontend", "-load-plugin-library",
-                    "-Xfrontend", previewsPluginPath
+                    "-I\(xcodeUsrLibPath)"
                 ])
             ],
             linkerSettings: [

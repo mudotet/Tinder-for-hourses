@@ -174,13 +174,52 @@ public enum MockSampleData {
                 HorsePhotoDTO(
                     id: UUID(uuidString: "40000000-0000-4000-8000-000000000002")!,
                     horseID: saffronHorseID,
-                    url: "https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=800",
+                    url: "/Users/tupt/Downloads/self_project/Tinder_for_horses/Server/Public/uploads/demo/luna_1.jpg",
                     position: 1,
                     createdAt: Date()
                 )
             ],
             distanceKm: 28.9,
             createdAt: Date().addingTimeInterval(-86_400 * 3),
+            updatedAt: Date()
+        ),
+        HorseProfileDTO(
+            id: UUID(uuidString: "55555555-5555-4555-8555-555555555555")!,
+            ownerID: otherUser2ID,
+            name: "Thunder",
+            age: 7,
+            sex: .stallion,
+            breed: "Friesian",
+            color: "Jet Black",
+            heightHands: 16.2,
+            disciplines: [.dressage, .pleasure, .trail],
+            temperamentTags: ["Majestic", "Expressive", "Gentle Giant"],
+            bio: "Baroque KFPS Friesian stallion with lofty knee action and a flowing mane. Loves sunset hacks and classical dressage.",
+            location: HorseLocationDTO(city: "Frankfort, KY", coarseLatitude: 38.20, coarseLongitude: -84.87),
+            lookingFor: [.breedingInquiry, .ridingCompanion, .trailBuddy],
+            healthInfo: HorseHealthInfoDTO(
+                cogginsTestDate: Date().addingTimeInterval(-86_400 * 12),
+                vaccinationsUpToDate: true
+            ),
+            pedigree: "KFPS Ster Stallion — Jasper 366 Line",
+            photos: [
+                HorsePhotoDTO(
+                    id: UUID(uuidString: "50000000-0000-4000-8000-000000000001")!,
+                    horseID: UUID(uuidString: "55555555-5555-4555-8555-555555555555")!,
+                    url: "/Users/tupt/Downloads/self_project/Tinder_for_horses/Server/Public/uploads/demo/thunder_1.jpg",
+                    position: 0,
+                    createdAt: Date()
+                ),
+                HorsePhotoDTO(
+                    id: UUID(uuidString: "50000000-0000-4000-8000-000000000002")!,
+                    horseID: UUID(uuidString: "55555555-5555-4555-8555-555555555555")!,
+                    url: "/Users/tupt/Downloads/self_project/Tinder_for_horses/Server/Public/uploads/demo/apollo_1.jpg",
+                    position: 1,
+                    createdAt: Date()
+                )
+            ],
+            distanceKm: 32.4,
+            createdAt: Date().addingTimeInterval(-86_400 * 2),
             updatedAt: Date()
         )
     ]
@@ -470,6 +509,9 @@ public actor MockAPIClient: APIClientProtocol {
 
     public func discoverHorses(query: DiscoveryFilterQuery) async throws -> CursorPage<HorseProfileDTO> {
         let blockedUserIDs = Set(blocks.map(\.blockedUserID))
+        if swipedHorseIDs.count >= candidateHorses.count {
+            swipedHorseIDs.removeAll()
+        }
         let filtered = candidateHorses.filter { horse in
             guard !swipedHorseIDs.contains(horse.id) else { return false }
             guard !blockedUserIDs.contains(horse.ownerID) else { return false }

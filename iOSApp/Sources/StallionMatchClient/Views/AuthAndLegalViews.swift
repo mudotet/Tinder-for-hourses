@@ -19,24 +19,56 @@ public struct AuthRootView: View {
     public var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
-                    // Header
-                    VStack(spacing: 10) {
-                        Image(systemName: "figure.equestrian.sports")
-                            .font(.system(size: 56))
-                            .foregroundStyle(EquestrianTheme.saddleBrown)
-                            .accessibilityHidden(true)
+                VStack(spacing: 22) {
+                    // Tinder Red Gradient Hero Header
+                    VStack(spacing: 12) {
+                        ZStack {
+                            Circle()
+                                .fill(EquestrianTheme.brandGradient)
+                                .frame(width: 82, height: 82)
+                                .shadow(color: EquestrianTheme.tinderRed.opacity(0.38), radius: 14, x: 0, y: 6)
 
-                        Text("Stallion Match")
-                            .font(.largeTitle.weight(.bold))
-                            .foregroundStyle(EquestrianTheme.saddleBrown)
+                            Image(systemName: "flame.fill")
+                                .font(.system(size: 40, weight: .bold))
+                                .foregroundStyle(.white)
+                        }
 
-                        Text("Connect horses for trail rides, companionship, and verified breeding inquiries.")
+                        Text("stallion")
+                            .font(.system(size: 36, weight: .heavy, design: .rounded))
+                            .foregroundStyle(EquestrianTheme.brandGradient)
+
+                        Text("Swipe, match, and connect horses for trail rides, companionship, and verified breeding inquiries.")
                             .font(.subheadline)
                             .multilineTextAlignment(.center)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(EquestrianTheme.slateSecondary)
+                            .padding(.horizontal, 12)
                     }
-                    .padding(.top, 20)
+                    .padding(.top, 24)
+
+                    // Instant Skip-Auth Button
+                    Button {
+                        appState.currentUser = MockSampleData.currentUser
+                        if appState.myHorses.isEmpty {
+                            appState.myHorses = [MockSampleData.myHorse]
+                            appState.activeHorseID = MockSampleData.myHorse.id
+                        }
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                            appState.isAuthenticated = true
+                        }
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "flame.fill")
+                            Text("Skip Login & Explore App Now")
+                                .fontWeight(.heavy)
+                        }
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(Capsule().fill(EquestrianTheme.brandGradient))
+                        .shadow(color: EquestrianTheme.tinderRed.opacity(0.35), radius: 12, x: 0, y: 6)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("quickDemoLoginButton")
 
                     Picker("Authentication Mode", selection: $isSignUpMode) {
                         Text("Sign Up").tag(true)
@@ -45,32 +77,37 @@ public struct AuthRootView: View {
                     .pickerStyle(.segmented)
                     .accessibilityIdentifier("authModePicker")
 
-                    VStack(spacing: 14) {
+                    VStack(spacing: 12) {
                         if isSignUpMode {
                             TextField("Owner / Handler Name", text: $displayName)
-                                .textFieldStyle(.roundedBorder)
+                                .textFieldStyle(.plain)
+                                .padding(13)
+                                .background(RoundedRectangle(cornerRadius: 14).fill(Color.white))
+                                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.gray.opacity(0.2), lineWidth: 1))
                                 .accessibilityIdentifier("displayNameField")
-                                .accessibilityLabel("Owner or handler name")
                         }
 
                         TextField("Email Address", text: $email)
-                            .textFieldStyle(.roundedBorder)
+                            .textFieldStyle(.plain)
                             .autocorrectionDisabled()
+                            .padding(13)
+                            .background(RoundedRectangle(cornerRadius: 14).fill(Color.white))
+                            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.gray.opacity(0.2), lineWidth: 1))
                             .accessibilityIdentifier("emailField")
-                            .accessibilityLabel("Email address")
 
                         SecureField("Password (min 8 characters)", text: $password)
-                            .textFieldStyle(.roundedBorder)
+                            .textFieldStyle(.plain)
+                            .padding(13)
+                            .background(RoundedRectangle(cornerRadius: 14).fill(Color.white))
+                            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.gray.opacity(0.2), lineWidth: 1))
                             .accessibilityIdentifier("passwordField")
-                            .accessibilityLabel("Password")
                     }
 
                     if let errorMessage = appState.authErrorMessage {
                         Text(errorMessage)
-                            .font(.footnote)
-                            .foregroundStyle(EquestrianTheme.warmTerracotta)
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(EquestrianTheme.tinderRed)
                             .multilineTextAlignment(.center)
-                            .accessibilityLabel("Error: \(errorMessage)")
                     }
 
                     Button {
@@ -90,16 +127,21 @@ public struct AuthRootView: View {
                     } label: {
                         HStack {
                             if isSubmitting {
-                                ProgressView().tint(.white)
+                                ProgressView().tint(EquestrianTheme.tinderRed)
                             }
                             Text(isSignUpMode ? "Create Account" : "Log In")
-                                .fontWeight(.semibold)
+                                .fontWeight(.bold)
                         }
+                        .foregroundStyle(EquestrianTheme.tinderRed)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
+                        .padding(.vertical, 13)
+                        .background(
+                            Capsule()
+                                .fill(Color.white)
+                                .overlay(Capsule().stroke(EquestrianTheme.tinderRed, lineWidth: 1.5))
+                        )
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(EquestrianTheme.saddleBrown)
+                    .buttonStyle(.plain)
                     .disabled(email.isEmpty || password.count < 8 || isSubmitting)
                     .accessibilityIdentifier("submitAuthButton")
 
@@ -131,32 +173,9 @@ public struct AuthRootView: View {
                             appState.authErrorMessage = error.localizedDescription
                         }
                     }
-                    .frame(height: 48)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .frame(height: 46)
+                    .clipShape(Capsule())
                     .accessibilityIdentifier("signInWithAppleButton")
-
-                    Button {
-                        Task {
-                            isSubmitting = true
-                            await appState.login(email: "demo@stallionmatch.app", password: "StablePass123")
-                            if !appState.isAuthenticated {
-                                await appState.signUp(
-                                    email: "demo@stallionmatch.app",
-                                    password: "StablePass123",
-                                    displayName: "Clara Vance"
-                                )
-                            }
-                            isSubmitting = false
-                        }
-                    } label: {
-                        Label("Enter Live Demo (Clara & Starlight)", systemImage: "sparkles")
-                            .fontWeight(.semibold)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 10)
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(EquestrianTheme.pastureSage)
-                    .accessibilityIdentifier("quickDemoLoginButton")
 
                     AnimalWelfareNoticeBanner()
 
@@ -164,27 +183,32 @@ public struct AuthRootView: View {
                         Button("Terms of Use") {
                             showTermsSheet = true
                         }
-                        .font(.footnote.weight(.medium))
-                        .foregroundStyle(EquestrianTheme.saddleBrown)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(EquestrianTheme.tinderRed)
 
-                        Text("•").foregroundStyle(.secondary)
+                        Text("•")
+                            .foregroundStyle(.secondary)
 
                         Button("Privacy Policy") {
                             showPrivacySheet = true
                         }
-                        .font(.footnote.weight(.medium))
-                        .foregroundStyle(EquestrianTheme.saddleBrown)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(EquestrianTheme.tinderRed)
                     }
                     .padding(.bottom, 20)
                 }
-                .padding(.horizontal, 24)
+                .padding(.horizontal, 22)
             }
-            .navigationTitle("Welcome")
+            .background(EquestrianTheme.screenBackground)
             .sheet(isPresented: $showTermsSheet) {
-                NavigationStack { TermsOfUseView() }
+                NavigationStack {
+                    TermsOfUseView()
+                }
             }
             .sheet(isPresented: $showPrivacySheet) {
-                NavigationStack { PrivacyPolicyView() }
+                NavigationStack {
+                    PrivacyPolicyView()
+                }
             }
         }
     }
@@ -200,23 +224,24 @@ public struct TermsOfUseView: View {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Stallion Match Terms of Use")
                     .font(.title2.weight(.bold))
+                    .foregroundStyle(EquestrianTheme.tinderRed)
 
                 Text("Effective Version: \(SafetyConstants.currentTermsVersion)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
                 Text("""
-                1. Eligibility & Responsible Horsemanship
-                Stallion Match is a platform for adult horse owners, trainers, and handlers (18+) to introduce their horses for companionship, trail riding, stablemates, and breeding inquiries.
+                1. Eligibility & Conduct
+                You must be at least 18 years old and the lawful owner or authorized handler of any horse profile you list on Stallion Match. Zero tolerance applies to abusive, fraudulent, or objectionable user-generated content.
 
-                2. Zero Tolerance for Objectionable Content or Abuse
-                Users may not post abusive, defamatory, sexually explicit, or animal-cruelty content in horse bios, photos, or chat messages. Every reported profile or message is reviewed in our server moderation queue within 24 hours, and violating accounts are removed immediately.
+                2. No In-App Payments or Animal Sales
+                Stallion Match is a discovery and communication platform for trail riding companions, stablemates, and breeding inquiries. No financial transactions, stud fee payments, or animal sales are processed in the application.
 
-                3. Animal Welfare & No In-App Payments
-                \(SafetyConstants.animalWelfareWarning)
+                3. Animal Welfare & Veterinary Compliance
+                Users are solely responsible for verifying health certificates, negative Coggins tests, vaccination records, and complying with all local, state, and federal animal-welfare and equine transport regulations.
 
-                4. Blocking & Reporting
-                You can block any user or report any horse profile, user, or message at any time. Blocking immediately hides all profiles and disables communication between both accounts.
+                4. Content Moderation & Account Termination
+                Reported profiles or messages are reviewed by our moderation team within 24 hours. Accounts violating these Terms will be suspended or permanently removed.
                 """)
                 .font(.body)
 
@@ -243,18 +268,20 @@ public struct PrivacyPolicyView: View {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Stallion Match Privacy Policy")
                     .font(.title2.weight(.bold))
+                    .foregroundStyle(EquestrianTheme.tinderRed)
 
                 Text("""
-                1. Data We Collect
-                • Account Information: Email address, optional display name, and encrypted password hash (Bcrypt) or Sign in with Apple identifier.
-                • Horse Profiles: Photos (2–6 per horse), breed, age, discipline, temperament tags, optional Coggins/vaccination dates, and bio.
-                • Coarse Location Only: We round all geographic coordinates to 2 decimal places (~1.1 km city-level resolution) before storage. Your exact barn or stable coordinates are never stored or shared.
+                1. Information We Collect
+                • Account credentials (email address, hashed password or Apple ID subject identifier).
+                • Horse profile information and uploaded horse photographs.
+                • Coarse city-level location (rounded to 2 decimal places / ~1.1 km resolution). Exact GPS coordinates of your barn or stable are never stored or shared.
+                • Chat messages and safety/moderation reports.
 
-                2. Token Security
-                Authentication tokens are stored exclusively in the iOS Keychain and rotated on every refresh.
+                2. How We Use Information
+                We use your data exclusively to provide horse discovery, matching, real-time messaging, and push notifications. We never sell your personal data or track you across third-party apps.
 
-                3. Complete Account Deletion
-                You can permanently delete your account at any time in Settings -> Delete Account. Account deletion immediately removes your user record, horse profiles, uploaded photos, swipes, matches, and chat history from our database and storage.
+                3. Data Retention & Account Deletion
+                You can permanently delete your account at any time in Settings → Delete Account. Account deletion immediately removes your user record, horse profiles, uploaded photos, swipes, matches, and messages from our database and storage.
                 """)
                 .font(.body)
             }
@@ -267,8 +294,4 @@ public struct PrivacyPolicyView: View {
             }
         }
     }
-}
-
-#Preview("Auth Root") {
-    AuthRootView(appState: AppStateViewModel())
 }
