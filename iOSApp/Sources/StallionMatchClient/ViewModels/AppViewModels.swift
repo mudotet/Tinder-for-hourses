@@ -272,6 +272,24 @@ public final class DiscoverViewModel {
         filterLookingFor = nil
         await loadCards(activeHorseID: activeHorseID, reset: true)
     }
+
+    public func sendInstantMatchMessage(match: MatchDTO, body: String, myHorse: HorseProfileDTO) async {
+        let trimmed = body.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        _ = try? await apiClient.sendMessage(
+            conversationID: match.conversationID,
+            request: SendMessageRequest(senderHorseID: myHorse.id, body: trimmed)
+        )
+        if let mock = apiClient as? MockAPIClient {
+            let otherHorse = (match.horseA.id == myHorse.id) ? match.horseB : match.horseA
+            _ = await mock.appendAIReply(
+                conversationID: match.conversationID,
+                otherHorse: otherHorse,
+                myHorse: myHorse,
+                userMessage: trimmed
+            )
+        }
+    }
 }
 
 @MainActor
@@ -416,9 +434,52 @@ public final class ChatDetailViewModel {
                 messages.append(sent)
             }
             state = .loaded
+            triggerAIReply(to: textToSend)
         } catch {
             draftText = textToSend
             safetyBannerMessage = error.localizedDescription
+        }
+    }
+
+    private func triggerAIReply(to userText: String) {
+        isOtherHorseTyping = true
+        let otherHorse = conversationSummary.otherHorse
+        let myHorse = conversationSummary.myHorse
+        let conversationID = conversationSummary.id
+        let client = apiClient
+
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 850_000_000)
+            guard let self else { return }
+            let replyMessage: MessageDTO
+            if let mock = client as? MockAPIClient {
+                replyMessage = await mock.appendAIReply(
+                    conversationID: conversationID,
+                    otherHorse: otherHorse,
+                    myHorse: myHorse,
+                    userMessage: userText
+                )
+            } else {
+                let replyBody = AIEquestrianPersonaEngine.generateReply(
+                    for: otherHorse,
+                    myHorse: myHorse,
+                    userMessage: userText,
+                    turnIndex: self.messages.count
+                )
+                replyMessage = MessageDTO(
+                    id: UUID(),
+                    conversationID: conversationID,
+                    senderUserID: otherHorse.ownerID,
+                    senderHorseID: otherHorse.id,
+                    body: replyBody,
+                    readAt: Date(),
+                    createdAt: Date()
+                )
+            }
+            self.isOtherHorseTyping = false
+            if !self.messages.contains(where: { $0.id == replyMessage.id }) {
+                self.messages.append(replyMessage)
+            }
         }
     }
 

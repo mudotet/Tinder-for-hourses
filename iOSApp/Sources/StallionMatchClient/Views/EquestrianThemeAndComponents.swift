@@ -102,34 +102,35 @@ public struct HorsePhotoView: View {
         }
 
         let lower = horseName.lowercased()
-        let candidates: [String]
+        let photoSet: [String]
         if lower.contains("luna") {
-            candidates = photoIndex % 2 == 0
-                ? ["luna_1.jpg", "luna_2.jpg", "saffron_1.jpg"]
-                : ["luna_2.jpg", "luna_1.jpg", "saffron_1.jpg"]
+            photoSet = ["luna_1.jpg", "luna_2.jpg", "bella_2.jpg", "hobby_pasture.jpg"]
+        } else if lower.contains("bella") {
+            photoSet = ["bella_1.jpg", "bella_2.jpg", "hobby_grooming.jpg", "hobby_pasture.jpg"]
+        } else if lower.contains("maverick") {
+            photoSet = ["maverick_1.jpg", "hobby_trail.jpg", "hobby_pasture.jpg", "bella_2.jpg"]
         } else if lower.contains("dakota") {
-            candidates = photoIndex % 2 == 0
-                ? ["dakota_1.jpg", "thunder_1.jpg", "apollo_1.jpg"]
-                : ["thunder_1.jpg", "dakota_1.jpg"]
-        } else if lower.contains("saffron") || lower.contains("starlight") || lower.contains("duchess") {
-            candidates = photoIndex % 2 == 0
-                ? ["saffron_1.jpg", "luna_1.jpg", "luna_2.jpg"]
-                : ["luna_1.jpg", "saffron_1.jpg"]
-        } else if lower.contains("thunder") || lower.contains("shadow") {
-            candidates = photoIndex % 2 == 0
-                ? ["thunder_1.jpg", "dakota_1.jpg", "apollo_1.jpg"]
-                : ["dakota_1.jpg", "thunder_1.jpg"]
+            photoSet = ["dakota_1.jpg", "maverick_1.jpg", "hobby_trail.jpg", "hobby_grooming.jpg"]
+        } else if lower.contains("duchess") {
+            photoSet = ["duchess_1.jpg", "bella_2.jpg", "hobby_pasture.jpg", "hobby_trail.jpg"]
+        } else if lower.contains("thunder") {
+            photoSet = ["thunder_1.jpg", "apollo_1.jpg", "hobby_trail.jpg", "bella_2.jpg"]
+        } else if lower.contains("saffron") || lower.contains("starlight") {
+            photoSet = ["saffron_1.jpg", "hobby_trail.jpg", "hobby_pasture.jpg", "hobby_grooming.jpg"]
+        } else if lower.contains("atlas") {
+            photoSet = ["atlas_1.jpg", "hobby_pasture.jpg", "hobby_trail.jpg", "bella_2.jpg"]
+        } else if lower.contains("cleo") {
+            photoSet = ["cleo_1.jpg", "hobby_grooming.jpg", "bella_2.jpg", "hobby_pasture.jpg"]
+        } else if lower.contains("blaze") {
+            photoSet = ["blaze_1.jpg", "hobby_trail.jpg", "hobby_grooming.jpg", "bella_2.jpg"]
         } else if lower.contains("apollo") {
-            candidates = photoIndex % 2 == 0
-                ? ["apollo_1.jpg", "thunder_1.jpg", "dakota_1.jpg"]
-                : ["thunder_1.jpg", "apollo_1.jpg"]
+            photoSet = ["apollo_1.jpg", "hobby_grooming.jpg", "hobby_trail.jpg", "hobby_pasture.jpg"]
         } else {
-            let all = ["luna_1.jpg", "dakota_1.jpg", "saffron_1.jpg", "apollo_1.jpg", "thunder_1.jpg", "luna_2.jpg"]
-            let idx = abs(horseName.hashValue + photoIndex) % all.count
-            candidates = [all[idx]] + all
+            photoSet = ["luna_1.jpg", "bella_1.jpg", "maverick_1.jpg", "duchess_1.jpg", "cleo_1.jpg", "blaze_1.jpg"]
         }
 
-        for file in candidates {
+        let selectedFile = photoSet[abs(photoIndex) % photoSet.count]
+        for file in [selectedFile] + photoSet {
             let fullPath = "\(demoPhotosDir)/\(file)"
             if FileManager.default.fileExists(atPath: fullPath) {
                 return fullPath

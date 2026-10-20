@@ -429,12 +429,32 @@ public struct ChatDetailScreen: View {
                         }
 
                         if viewModel.isOtherHorseTyping {
-                            HStack {
-                                Text("\(viewModel.conversationSummary.otherHorse.name) is typing...")
-                                    .font(.caption.italic())
-                                    .foregroundStyle(EquestrianTheme.slateSecondary)
+                            HStack(alignment: .bottom, spacing: 8) {
+                                HorsePhotoView(
+                                    horseName: viewModel.conversationSummary.otherHorse.name,
+                                    photoURL: viewModel.conversationSummary.otherHorse.photos.first?.url,
+                                    photoIndex: 0
+                                )
+                                .frame(width: 28, height: 28)
+                                .clipShape(Circle())
+
+                                HStack(spacing: 6) {
+                                    ProgressView()
+                                        .controlSize(.small)
+                                        .tint(EquestrianTheme.tinderRed)
+                                    Text("\(viewModel.conversationSummary.otherHorse.name) is typing an AI reply...")
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(EquestrianTheme.tinderRed)
+                                }
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 10)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                        .fill(EquestrianTheme.softRoseTint)
+                                )
                                 Spacer()
                             }
+                            .transition(.scale.combined(with: .opacity))
                         }
                     }
                     .padding(16)
@@ -445,6 +465,38 @@ public struct ChatDetailScreen: View {
                     Task { await viewModel.loadMessages() }
                 }
             }
+
+            // Quick AI Icebreaker Suggestion Strip
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(AIEquestrianPersonaEngine.quickIcebreakers, id: \.self) { suggestion in
+                        Button {
+                            viewModel.draftText = suggestion
+                            Task { await viewModel.sendMessage() }
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "sparkles")
+                                    .font(.system(size: 10, weight: .bold))
+                                Text(suggestion)
+                                    .font(.caption2.weight(.semibold))
+                                    .lineLimit(1)
+                            }
+                            .foregroundStyle(EquestrianTheme.tinderRed)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 7)
+                            .background(
+                                Capsule()
+                                    .fill(EquestrianTheme.softRoseTint)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 14)
+                .padding(.top, 8)
+                .padding(.bottom, 2)
+            }
+            .background(Color.white)
 
             // Mobile Chat Input Pill Bar
             HStack(spacing: 10) {
