@@ -51,6 +51,11 @@ struct StallionMatchiOSApp: App {
                 .task {
                     #if canImport(AppKit)
                     NSApplication.shared.activate(ignoringOtherApps: true)
+                    if ProcessInfo.processInfo.arguments.contains("--export-screenshots") {
+                        await Self.exportAppScreenshots()
+                        NSApplication.shared.terminate(nil)
+                        return
+                    }
                     #endif
                     if ProcessInfo.processInfo.arguments.contains("--live") {
                         await appState.login(email: "demo@stallionmatch.app", password: "StablePass123")
@@ -61,4 +66,124 @@ struct StallionMatchiOSApp: App {
         .defaultSize(width: 402, height: 852)
         #endif
     }
+
+    #if canImport(AppKit)
+    @MainActor
+    private static func exportAppScreenshots() async {
+        let outDir = "/Users/tupt/Downloads/self_project/Tinder_for_horses/docs/screenshots"
+        try? FileManager.default.createDirectory(atPath: outDir, withIntermediateDirectories: true)
+
+        let mockClient = MockAPIClient()
+        let lightState = AppStateViewModel(
+            apiClient: mockClient,
+            preauthenticatedUser: MockSampleData.currentUser,
+            initialHorses: [MockSampleData.myHorse]
+        )
+        lightState.isDarkMode = false
+
+        let darkState = AppStateViewModel(
+            apiClient: mockClient,
+            preauthenticatedUser: MockSampleData.currentUser,
+            initialHorses: [MockSampleData.myHorse]
+        )
+        darkState.isDarkMode = true
+
+        let discoverVM = DiscoverViewModel(apiClient: mockClient)
+        await discoverVM.loadCards(activeHorseID: MockSampleData.myHorse.id, reset: true)
+        discoverVM.cards = MockSampleData.discoveryHorses
+        discoverVM.state = .loaded
+
+        let matchesVM = MatchesAndConversationsViewModel(apiClient: mockClient)
+        await matchesVM.refreshAll()
+        matchesVM.matches = [MockSampleData.sampleMatch]
+        matchesVM.conversations = [MockSampleData.sampleConversationSummary]
+        matchesVM.matchesState = .loaded
+        matchesVM.conversationsState = .loaded
+
+        let chatVM = ChatDetailViewModel(
+            conversationSummary: MockSampleData.sampleConversationSummary,
+            apiClient: mockClient
+        )
+        await chatVM.loadMessages()
+        chatVM.messages = MockSampleData.sampleMessages
+        chatVM.state = .loaded
+        chatVM.isOtherHorseTyping = true
+
+        await saveWindowSnapshot(
+            DiscoverScreen(appState: lightState, viewModel: discoverVM)
+                .environment(\.colorScheme, .light),
+            appearanceName: .aqua,
+            to: "\(outDir)/discover_light.png"
+        )
+
+        await saveWindowSnapshot(
+            DiscoverScreen(appState: darkState, viewModel: discoverVM)
+                .environment(\.colorScheme, .dark),
+            appearanceName: .darkAqua,
+            to: "\(outDir)/discover_dark.png"
+        )
+
+        await saveWindowSnapshot(
+            HorseDetailSheet(
+                horse: MockSampleData.discoveryHorses[0],
+                apiClient: mockClient,
+                onSwipeDecision: { _ in },
+                onModerationAction: {}
+            )
+            .environment(\.colorScheme, .light),
+            appearanceName: .aqua,
+            to: "\(outDir)/horse_detail.png"
+        )
+
+        await saveWindowSnapshot(
+            ChatDetailScreen(
+                viewModel: chatVM,
+                currentUserID: MockSampleData.currentUserID
+            )
+            .environment(\.colorScheme, .light),
+            appearanceName: .aqua,
+            to: "\(outDir)/chat_screen.png"
+        )
+
+        await saveWindowSnapshot(
+            MessagesScreen(appState: lightState, viewModel: matchesVM)
+                .environment(\.colorScheme, .light),
+            appearanceName: .aqua,
+            to: "\(outDir)/messages_screen.png"
+        )
+    }
+
+    @MainActor
+    private static func saveWindowSnapshot<V: View>(
+        _ view: V,
+        appearanceName: NSAppearance.Name,
+        to path: String
+    ) async {
+        let size = NSSize(width: 402, height: 852)
+        let hostingView = NSHostingView(
+            rootView: view.frame(width: size.width, height: size.height)
+        )
+        hostingView.frame = NSRect(origin: .zero, size: size)
+        let window = NSWindow(
+            contentRect: NSRect(origin: .zero, size: size),
+            styleMask: [.borderless],
+            backing: .buffered,
+            defer: false
+        )
+        window.appearance = NSAppearance(named: appearanceName)
+        window.contentView = hostingView
+        window.orderFront(nil)
+        hostingView.layoutSubtreeIfNeeded()
+        try? await Task.sleep(nanoseconds: 250_000_000)
+        hostingView.layoutSubtreeIfNeeded()
+
+        if let rep = hostingView.bitmapImageRepForCachingDisplay(in: hostingView.bounds) {
+            hostingView.cacheDisplay(in: hostingView.bounds, to: rep)
+            if let pngData = rep.representation(using: .png, properties: [:]) {
+                try? pngData.write(to: URL(fileURLWithPath: path))
+            }
+        }
+        window.orderOut(nil)
+    }
+    #endif
 }
