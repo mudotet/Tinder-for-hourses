@@ -391,8 +391,11 @@ public struct ChatDetailScreen: View {
                 ScrollViewReader { scrollProxy in
                     ScrollView {
                         LazyVStack(spacing: 12) {
-                            AnimalWelfareNoticeBanner()
-                                .padding(.bottom, 6)
+                            Text("YOU MATCHED WITH \(viewModel.conversationSummary.otherHorse.name.uppercased())")
+                                .font(.system(size: 10, weight: .bold))
+                                .tracking(1)
+                                .foregroundStyle(EquestrianTheme.slateSecondary)
+                                .padding(.vertical, 8)
 
                             ForEach(viewModel.messages) { msg in
                                 let isMine = (msg.senderUserID == currentUserID)
@@ -482,42 +485,12 @@ public struct ChatDetailScreen: View {
                 }
             }
 
-            // Quick AI Icebreaker Suggestion Strip
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(AIEquestrianPersonaEngine.quickIcebreakers, id: \.self) { suggestion in
-                        Button {
-                            viewModel.draftText = suggestion
-                            Task { await viewModel.sendMessage() }
-                        } label: {
-                            HStack(spacing: 4) {
-                                Image(systemName: "sparkles")
-                                    .font(.system(size: 10, weight: .bold))
-                                Text(suggestion)
-                                    .font(.caption2.weight(.semibold))
-                                    .lineLimit(1)
-                            }
-                            .foregroundStyle(EquestrianTheme.tinderRed)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 7)
-                            .background(
-                                Capsule()
-                                    .fill(EquestrianTheme.softRoseTint)
-                            )
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding(.horizontal, 14)
-                .padding(.top, 8)
-                .padding(.bottom, 2)
-            }
-            .background(EquestrianTheme.cardSurface)
+            Divider()
 
             // Mobile Chat Input Pill Bar
             HStack(spacing: 10) {
                 TextField(
-                    "Send a message to \(viewModel.conversationSummary.otherHorse.name)...",
+                    "Message \(viewModel.conversationSummary.otherHorse.name)...",
                     text: $viewModel.draftText
                 )
                 .textFieldStyle(.plain)

@@ -376,31 +376,30 @@ public struct HorseLifestyleProfile: Sendable {
     }
 }
 
-/// Context-aware AI Equestrian Persona Engine that generates realistic, character-specific match icebreakers and chat replies.
+/// Context-aware Equestrian Chat Engine that generates natural, casual human-style text messages.
 public enum AIEquestrianPersonaEngine {
     public static func openingIcebreaker(from otherHorse: HorseProfileDTO, to myHorse: HorseProfileDTO) -> String {
-        let profile = HorseLifestyleProfile.forHorse(otherHorse)
         let lower = otherHorse.name.lowercased()
         if lower.contains("luna") {
-            return "Hi! I'm \(profile.handlerName) (\(otherHorse.name)'s rider) 🐴✨ \(otherHorse.name) saw \(myHorse.name)'s profile and gave the sweetest nicker! Do you two ever hack out near the Kentucky Horse Park?"
+            return "hey! \(myHorse.name.lowercased()) is gorgeous, do you guys ever ride out near the horse park?"
         } else if lower.contains("dakota") {
-            return "Hey there! \(profile.handlerName) & \(otherHorse.name) here 🤠🌲 \(myHorse.name) looks like an awesome trail partner! We're planning a creek-crossing trail ride this weekend—would \(myHorse.name) want to join?"
+            return "hey there! we're heading out for a trail ride this weekend if you and \(myHorse.name.lowercased()) wanna tag along"
         } else if lower.contains("saffron") {
-            return "Hi from \(profile.handlerName) & \(otherHorse.name)! ☀️🐎 \(myHorse.name) has such an athletic build! How many miles do you two usually cover on your weekend rides?"
+            return "hey! how's your week going? \(myHorse.name.lowercased()) looks like such a fun ride"
         } else if lower.contains("thunder") {
-            return "Greetings from \(profile.handlerName) and \(otherHorse.name) 🖤✨ \(otherHorse.name) was showing off his big Friesian trot in the paddock today—he'd love to meet \(myHorse.name) for an arena session or sunset hack!"
+            return "hey! matched with you guys right after finishing up at the barn haha, how's it going?"
         } else if lower.contains("bella") {
-            return "Hi!! \(profile.handlerName) & \(otherHorse.name) here 🏆🍎 \(otherHorse.name) just finished her jumping grid and is currently demanding apples. Would \(myHorse.name) like to hack out on the grass field with us this week?"
+            return "hey!! \(myHorse.name.lowercased()) is so handsome, what barn are you guys at?"
         } else if lower.contains("maverick") {
-            return "Howdy! \(profile.handlerName) & \(otherHorse.name) here 🌊🐎 If \(myHorse.name) likes splashing through shallow rivers and cantering open trails, our horses are going to be best friends!"
+            return "hey! do you guys do much trail riding around \(myHorse.location.city.components(separatedBy: ",").first ?? "here")?"
         } else if lower.contains("duchess") {
-            return "Hello from \(profile.handlerName) & \(otherHorse.name)! 🌸🐴 \(otherHorse.name) just had her feathers washed and braided—she's looking for a gentle companion for a scenic afternoon trail walk!"
+            return "hi! \(myHorse.name.lowercased()) looks so sweet, how long have you had him?"
         } else if lower.contains("atlas") {
-            return "Hello! \(profile.handlerName) & \(otherHorse.name) (our 18.1hh gentle giant!) here 🍂🐴 Don't let his size fool you—he's the sweetest boy in the barn and would love a friendly pasture or trail buddy like \(myHorse.name)!"
+            return "hey! don't let atlas's size fool you haha he's a total gentle giant. how's your day going?"
         } else if lower.contains("cleo") {
-            return "Olá & hello from \(profile.handlerName) & \(otherHorse.name)! ✨🐎 \(myHorse.name) looks wonderful—do you enjoy dressage schooling, obstacle bridges, or relaxed trail hacks?"
+            return "hey! love \(myHorse.name.lowercased())'s pics, do you guys mostly do arena work or trails?"
         } else {
-            return "Hey! \(profile.handlerName) & \(otherHorse.name) here 🌲🏅 \(myHorse.name) looks like a fantastic match! What's your favorite trail or arena spot around \(myHorse.location.city)?"
+            return "hey! how's it going? \(myHorse.name.lowercased()) looks awesome"
         }
     }
 
@@ -411,31 +410,49 @@ public enum AIEquestrianPersonaEngine {
         turnIndex: Int
     ) -> String {
         let profile = HorseLifestyleProfile.forHorse(otherHorse)
-        let msg = userMessage.lowercased()
+        let msg = userMessage.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
 
-        if msg.contains("trail") || msg.contains("saturday") || msg.contains("sunday") || msg.contains("weekend") || msg.contains("ride") || msg.contains("hack") || msg.contains("park") {
-            return "That sounds amazing! 🌲🐎 \(otherHorse.name) is happiest out on the trails around 9:30 AM before the sun gets high. We can meet by the North Trailhead parking area at the Kentucky Horse Park—\(profile.handlerName) will bring extra carrots for \(myHorse.name)!"
+        if msg == "hi" || msg == "hey" || msg == "hello" || msg == "yo" || msg == "sup" || msg.hasPrefix("hey ") || msg.hasPrefix("hi ") {
+            let greetings = [
+                "hey! how's your day going?",
+                "heyy! just got back from the barn, how are you?",
+                "hey there! how's \(myHorse.name.lowercased()) doing today?"
+            ]
+            return greetings[abs(turnIndex) % greetings.count]
+        }
+        if msg.contains("how are you") || msg.contains("how's it going") || msg.contains("hows it going") || msg.contains("what's up") || msg.contains("whats up") || msg.contains("wyd") {
+            return "doing pretty good! just finished up at the barn with \(otherHorse.name.lowercased()) haha. how about you?"
+        }
+        if msg.contains("who are you") || msg.contains("your name") || msg.contains("real") || msg.contains("ai") || msg.contains("bot") {
+            return "haha i'm \(profile.handlerName.components(separatedBy: " ").first ?? profile.handlerName), \(otherHorse.name.lowercased())'s owner! we're over at \(profile.verifiedBarnName) in \(otherHorse.location.city.components(separatedBy: ",").first ?? otherHorse.location.city)"
+        }
+        if msg.contains("trail") || msg.contains("saturday") || msg.contains("sunday") || msg.contains("weekend") || msg.contains("ride") || msg.contains("hack") || msg.contains("meet") {
+            return "i'm totally down! saturday morning around 10 works great for me if the weather holds up"
         }
         if msg.contains("apple") || msg.contains("carrot") || msg.contains("treat") || msg.contains("snack") || msg.contains("food") {
-            return "Haha you just spoke \(otherHorse.name)'s love language! 🍎🥕 (\(profile.badges.first?.label ?? "Honeycrisp apples") are an instant 10/10 in our barn). If you bring a pocketful of treats, \(otherHorse.name) will follow \(myHorse.name) anywhere!"
+            return "omg yes 😂 \(otherHorse.name.lowercased()) will literally be your best friend forever if you bring apples"
         }
         if msg.contains("jump") || msg.contains("dressage") || msg.contains("arena") || msg.contains("train") || msg.contains("school") {
-            return "We school 4 days a week at \(profile.verifiedBarnName)! 🏇✨ Having \(myHorse.name) join us for a flatwork or cavaletti session followed by a cool-down walk around the track would be so much fun."
+            return "we usually school a few days a week at \(profile.verifiedBarnName) and then just hack out on weekends. wbu?"
         }
-        if msg.contains("breed") || msg.contains("stallion") || msg.contains("mare") || msg.contains("pedigree") || msg.contains("foal") || msg.contains("coggins") || msg.contains("vet") {
-            return "Absolutely—all of \(otherHorse.name)'s veterinary records, negative Coggins, and vaccinations are 100% up to date (\(otherHorse.pedigree ?? "registered bloodlines")). We'd love to arrange a calm barn visit at \(profile.verifiedBarnName) so you and \(myHorse.name) can meet in person!"
-        }
-        if msg.contains("photo") || msg.contains("picture") || msg.contains("cute") || msg.contains("beautiful") || msg.contains("gorgeous") || msg.contains("pretty") || msg.contains("handsome") || msg.contains("coat") {
-            return "Aww thank you!! 🥰🐴 \(otherHorse.name) just got a warm courtyard bath and extra grooming session today—though knowing \(otherHorse.name), there's a 90% chance of rolling in the pasture right before meeting \(myHorse.name)!"
+        if msg.contains("old") || msg.contains("age") || msg.contains("tall") || msg.contains("height") || msg.contains("breed") {
+            return "\(otherHorse.name.lowercased()) is \(otherHorse.age) and about \(String(format: "%.1f", otherHorse.heightHands)) hands! super chill temperament too"
         }
         if msg.contains("where") || msg.contains("location") || msg.contains("city") || msg.contains("barn") || msg.contains("far") {
-            return "We're stabled at \(profile.verifiedBarnName) in \(otherHorse.location.city) (only about \(Int(otherHorse.distanceKm ?? 18)) km from \(myHorse.location.city))! 🚚💨 \(otherHorse.name) self-loads into the trailer super easily so we're happy to haul over your way too."
+            return "we're in \(otherHorse.location.city), not far from you at all! where do you usually ride?"
+        }
+        if msg.contains("cute") || msg.contains("pretty") || msg.contains("handsome") || msg.contains("gorgeous") || msg.contains("beautiful") || msg.contains("nice") || msg.contains("love") {
+            return "aww thank you!! 😊 \(myHorse.name.lowercased()) is seriously gorgeous too"
+        }
+        if msg.contains("lol") || msg.contains("haha") || msg.contains("lmao") {
+            return "haha right?? honestly never a dull moment at the barn 😂"
         }
 
         let rotationalReplies = [
-            "We'd love that! 🐴❤️ \(otherHorse.name) has such a calm, friendly temperament with new horses. What day this week works best for you and \(myHorse.name)?",
-            "Haha \(otherHorse.name) just pricked both ears up at the barn! ✨ Do \(myHorse.name) and you prefer quiet wooded bridle paths or open pasture canters?",
-            "Spot on! \(profile.handlerName) was just saying \(otherHorse.name) needs a consistent riding buddy. Let's definitely set up a meet-and-greet hack soon! 🥕🐎"
+            "haha yeah totally! do you guys ride out on weekends much?",
+            "honestly that sounds great, what days usually work best for you?",
+            "nice! how long have you and \(myHorse.name.lowercased()) been together?",
+            "for sure! let's definitely plan a ride sometime this week if you're free"
         ]
         return rotationalReplies[abs(turnIndex) % rotationalReplies.count]
     }
@@ -449,6 +466,7 @@ public enum AIEquestrianPersonaEngine {
         let model: String
         let messages: [OpenAIChatMessage]
         let temperature: Double
+        let reasoning_effort: String?
     }
 
     private struct OpenAIChatResponse: Codable, Sendable {
@@ -461,8 +479,8 @@ public enum AIEquestrianPersonaEngine {
         let choices: [Choice]
     }
 
-    /// Calls a real OpenAI-compatible LLM chat completions endpoint (`https://text.pollinations.ai/openai`, model `openai-fast` / `gpt-oss-20b`)
-    /// with full conversation context and horse/rider persona, falling back to `generateReply` only if offline.
+    /// Calls a real OpenAI-compatible LLM chat completions endpoint (`https://text.pollinations.ai/openai`)
+    /// with instructions to text like a real human on Tinder (short, casual, natural).
     public static func generateLiveLLMReply(
         for otherHorse: HorseProfileDTO,
         myHorse: HorseProfileDTO,
@@ -470,16 +488,14 @@ public enum AIEquestrianPersonaEngine {
         latestUserMessage: String
     ) async -> String {
         let profile = HorseLifestyleProfile.forHorse(otherHorse)
-        let badgesSummary = profile.badges.map { "\($0.category): \($0.label)" }.joined(separator: "; ")
+        let firstName = profile.handlerName.components(separatedBy: " ").first ?? profile.handlerName
         let systemPrompt = """
-        You are \(profile.handlerName) (\(profile.handlerTitle) at \(profile.verifiedBarnName)), chatting on Stallion Match—a Tinder-style mobile app for horses and their owners/riders.
-        Your horse is \(otherHorse.name), a \(otherHorse.age)-year-old \(otherHorse.color) \(otherHorse.breed) \(otherHorse.sex.displayName) (\(String(format: "%.1f", otherHorse.heightHands)) hands) located in \(otherHorse.location.city).
-        Your horse's bio: "\(otherHorse.bio)"
-        Your horse's lifestyle & hobbies: \(badgesSummary).
-        You matched with \(myHorse.name), a \(myHorse.age)-year-old \(myHorse.breed) \(myHorse.sex.displayName) in \(myHorse.location.city).
-        Rules:
-        - Reply directly, naturally, and conversationally to what the user just said (even if they ask casual, funny, or unexpected questions).
-        - Keep your response concise (1 to 3 sentences, max 45 words), warm, friendly, and in-character as \(profile.handlerName) with \(otherHorse.name).
+        You are \(firstName), a real person texting on a Tinder-style app for horse owners. Your horse is \(otherHorse.name) (\(otherHorse.age)yo \(otherHorse.breed) in \(otherHorse.location.city)). You matched with someone whose horse is \(myHorse.name).
+        CRITICAL TEXTING RULES:
+        - Text like a normal young person on their phone (1 short casual sentence, 5 to 20 words).
+        - Use casual phrasing (e.g., "haha", "yeah", "tbh", "wbu?", lowercase is fine).
+        - NEVER sound like an AI assistant, NEVER write long paragraphs, NEVER use em-dashes (—) or semicolons, and use at most 1 emoji (or 0 emojis).
+        - Directly answer or react to what the other person just texted.
         """
 
         var chatMessages: [OpenAIChatMessage] = [
@@ -500,7 +516,7 @@ public enum AIEquestrianPersonaEngine {
         if let url = URL(string: endpointString) {
             var urlRequest = URLRequest(url: url)
             urlRequest.httpMethod = "POST"
-            urlRequest.timeoutInterval = 8.0
+            urlRequest.timeoutInterval = 18.0
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             if let apiKey = ProcessInfo.processInfo.environment["OPENAI_API_KEY"], !apiKey.isEmpty {
                 urlRequest.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
@@ -509,7 +525,8 @@ public enum AIEquestrianPersonaEngine {
             let payload = OpenAIChatRequest(
                 model: modelName,
                 messages: chatMessages,
-                temperature: 0.75
+                temperature: 0.8,
+                reasoning_effort: "low"
             )
 
             if let bodyData = try? JSONEncoder().encode(payload) {
@@ -518,10 +535,14 @@ public enum AIEquestrianPersonaEngine {
                    let http = response as? HTTPURLResponse,
                    (200...299).contains(http.statusCode),
                    let decoded = try? JSONDecoder().decode(OpenAIChatResponse.self, from: data),
-                   let text = decoded.choices.first?.message.content?.trimmingCharacters(in: .whitespacesAndNewlines),
-                   !text.isEmpty
+                   let rawText = decoded.choices.first?.message.content?.trimmingCharacters(in: .whitespacesAndNewlines),
+                   !rawText.isEmpty
                 {
-                    return text
+                    let cleaned = rawText
+                        .replacingOccurrences(of: "—", with: ", ")
+                        .replacingOccurrences(of: "–", with: ", ")
+                        .trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+                    return cleaned
                 }
             }
         }
@@ -535,10 +556,10 @@ public enum AIEquestrianPersonaEngine {
     }
 
     public static let quickIcebreakers: [String] = [
-        "Want to go for a Saturday morning trail ride? 🌲🐎",
-        "I brought Honeycrisp apples & carrots for your horse! 🍎🥕",
-        "Your horse's coat and photos look incredible! ✨",
-        "Where is your favorite place to school or hack out? 🏇"
+        "hey! how's your week going?",
+        "do you guys ride out on weekends?",
+        "what barn are you guys at?",
+        "down for a trail ride sometime?"
     ]
 }
 
@@ -870,7 +891,7 @@ public enum MockSampleData {
             conversationID: sampleConversationID,
             senderUserID: otherUser1ID,
             senderHorseID: lunaHorseID,
-            body: "Hi Clara! Apollo has such wonderful movement. Luna and I ride at the Kentucky Horse Park trails on Saturday mornings!",
+            body: "hey! apollo looks awesome, do you guys ever ride out at the horse park?",
             readAt: Date().addingTimeInterval(-1800),
             createdAt: Date().addingTimeInterval(-3600)
         ),
@@ -879,7 +900,7 @@ public enum MockSampleData {
             conversationID: sampleConversationID,
             senderUserID: currentUserID,
             senderHorseID: myHorseID,
-            body: "Thank you! Apollo would love to join Luna for a morning hack around the park.",
+            body: "hey! yeah we usually go out there on saturday mornings, wbu?",
             readAt: Date().addingTimeInterval(-900),
             createdAt: Date().addingTimeInterval(-1200)
         )
