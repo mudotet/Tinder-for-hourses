@@ -1,0 +1,295 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000010000000000000001 /* StallionMatchiOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000001 /* StallionMatchiOSApp.swift */; };
+		A10000030000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A10000040000000000000001 /* PrivacyInfo.xcprivacy */; };
+		A10000050000000000000001 /* SharedModels in Frameworks */ = {isa = PBXBuildFile; productRef = A10000060000000000000001 /* SharedModels */; };
+		A10000070000000000000001 /* StallionMatchClient in Frameworks */ = {isa = PBXBuildFile; productRef = A10000080000000000000001 /* StallionMatchClient */; };
+		A10000090000000000000001 /* StallionMatchUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000A0000000000000001 /* StallionMatchUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A10000020000000000000001 /* StallionMatchiOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/StallionMatchiOSApp.swift; sourceTree = "<group>"; };
+		A10000040000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		A100000A0000000000000001 /* StallionMatchUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITests/StallionMatchUITests.swift; sourceTree = "<group>"; };
+		A100000B0000000000000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A100000C0000000000000001 /* StallionMatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StallionMatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A100000D0000000000000001 /* StallionMatchUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StallionMatchUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A10000100000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000050000000000000001 /* SharedModels in Frameworks */,
+				A10000070000000000000001 /* StallionMatchClient in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000110000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A10000200000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				A10000020000000000000001 /* StallionMatchiOSApp.swift */,
+				A100000B0000000000000001 /* Info.plist */,
+				A10000040000000000000001 /* PrivacyInfo.xcprivacy */,
+				A100000A0000000000000001 /* StallionMatchUITests.swift */,
+				A10000210000000000000001 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A10000210000000000000001 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A100000C0000000000000001 /* StallionMatch.app */,
+				A100000D0000000000000001 /* StallionMatchUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A10000300000000000000001 /* StallionMatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000400000000000000001 /* Build configuration list for PBXNativeTarget "StallionMatch" */;
+			buildPhases = (
+				A10000320000000000000001 /* Sources */,
+				A10000100000000000000001 /* Frameworks */,
+				A10000330000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = StallionMatch;
+			packageProductDependencies = (
+				A10000060000000000000001 /* SharedModels */,
+				A10000080000000000000001 /* StallionMatchClient */,
+			);
+			productName = StallionMatch;
+			productReference = A100000C0000000000000001 /* StallionMatch.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A10000310000000000000001 /* StallionMatchUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000410000000000000001 /* Build configuration list for PBXNativeTarget "StallionMatchUITests" */;
+			buildPhases = (
+				A10000340000000000000001 /* Sources */,
+				A10000110000000000000001 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = StallionMatchUITests;
+			productName = StallionMatchUITests;
+			productReference = A100000D0000000000000001 /* StallionMatchUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A10000500000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+			};
+			buildConfigurationList = A10000420000000000000001 /* Build configuration list for PBXProject "StallionMatch" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A10000200000000000000001;
+			packageReferences = (
+				A10000600000000000000001 /* XCLocalSwiftPackageReference "../SharedModels" */,
+				A10000610000000000000001 /* XCLocalSwiftPackageReference "." */,
+			);
+			productRefGroup = A10000210000000000000001 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A10000300000000000000001 /* StallionMatch */,
+				A10000310000000000000001 /* StallionMatchUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A10000330000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000030000000000000001 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A10000320000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000010000000000000001 /* StallionMatchiOSApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000340000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000090000000000000001 /* StallionMatchUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A10000700000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		A10000710000000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		A10000720000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stallionmatch.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A10000730000000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stallionmatch.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A10000740000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stallionmatch.app.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = StallionMatch;
+			};
+			name = Debug;
+		};
+		A10000750000000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stallionmatch.app.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = StallionMatch;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A10000400000000000000001 /* Build configuration list for PBXNativeTarget "StallionMatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000720000000000000001 /* Debug */,
+				A10000730000000000000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10000410000000000000001 /* Build configuration list for PBXNativeTarget "StallionMatchUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000740000000000000001 /* Debug */,
+				A10000750000000000000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10000420000000000000001 /* Build configuration list for PBXProject "StallionMatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000700000000000000001 /* Debug */,
+				A10000710000000000000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		A10000600000000000000001 /* XCLocalSwiftPackageReference "../SharedModels" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../SharedModels;
+		};
+		A10000610000000000000001 /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A10000060000000000000001 /* SharedModels */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A10000600000000000000001 /* XCLocalSwiftPackageReference "../SharedModels" */;
+			productName = SharedModels;
+		};
+		A10000080000000000000001 /* StallionMatchClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A10000610000000000000001 /* XCLocalSwiftPackageReference "." */;
+			productName = StallionMatchClient;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = A10000500000000000000001 /* Project object */;
+}

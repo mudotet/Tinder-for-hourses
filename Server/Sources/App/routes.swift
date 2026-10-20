@@ -12,4 +12,8 @@ public func routes(_ app: Application) throws {
     }
 
     try apiV1.register(collection: AuthController())
+    try apiV1.register(collection: HorseController())
+    try apiV1.register(collection: DiscoveryAndSwipeController())
+    try apiV1.register(collection: SafetyController())
+    try apiV1.register(collection: ChatController())
 }
