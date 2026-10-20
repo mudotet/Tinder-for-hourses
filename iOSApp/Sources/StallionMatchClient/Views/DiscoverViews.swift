@@ -273,7 +273,8 @@ public struct DiscoverScreen: View {
                     .padding(.vertical, 5)
                     .background(
                         Capsule()
-                            .fill(Color.white)
+                            .fill(EquestrianTheme.elevatedSurface)
+                            .overlay(Capsule().stroke(EquestrianTheme.subtleBorder, lineWidth: 1))
                             .shadow(color: .black.opacity(0.07), radius: 6, x: 0, y: 2)
                     )
                 }
@@ -293,6 +294,8 @@ public struct DiscoverScreen: View {
                 .accessibilityIdentifier("createFirstHorseButton")
             }
 
+            ThemeModeToggleButton(appState: appState)
+
             Button {
                 showFilterSheet = true
             } label: {
@@ -302,7 +305,8 @@ public struct DiscoverScreen: View {
                     .frame(width: 36, height: 36)
                     .background(
                         Circle()
-                            .fill(Color.white)
+                            .fill(EquestrianTheme.elevatedSurface)
+                            .overlay(Circle().stroke(EquestrianTheme.subtleBorder, lineWidth: 1))
                             .shadow(color: .black.opacity(0.07), radius: 6, x: 0, y: 2)
                     )
             }
@@ -330,7 +334,8 @@ public struct DiscoverScreen: View {
                     .frame(width: 46, height: 46)
                     .background(
                         Circle()
-                            .fill(Color.white)
+                            .fill(EquestrianTheme.elevatedSurface)
+                            .overlay(Circle().stroke(EquestrianTheme.subtleBorder, lineWidth: 1))
                             .shadow(color: .black.opacity(0.10), radius: 8, x: 0, y: 4)
                     )
             }
@@ -349,7 +354,8 @@ public struct DiscoverScreen: View {
                     .frame(width: 62, height: 62)
                     .background(
                         Circle()
-                            .fill(Color.white)
+                            .fill(EquestrianTheme.elevatedSurface)
+                            .overlay(Circle().stroke(EquestrianTheme.subtleBorder, lineWidth: 1))
                             .shadow(color: EquestrianTheme.nopeRed.opacity(0.24), radius: 12, x: 0, y: 5)
                     )
             }
@@ -377,7 +383,8 @@ public struct DiscoverScreen: View {
                     .frame(width: 48, height: 48)
                     .background(
                         Circle()
-                            .fill(Color.white)
+                            .fill(EquestrianTheme.elevatedSurface)
+                            .overlay(Circle().stroke(EquestrianTheme.subtleBorder, lineWidth: 1))
                             .shadow(color: EquestrianTheme.superLikeBlue.opacity(0.28), radius: 10, x: 0, y: 4)
                     )
             }
@@ -412,7 +419,8 @@ public struct DiscoverScreen: View {
                     .frame(width: 46, height: 46)
                     .background(
                         Circle()
-                            .fill(Color.white)
+                            .fill(EquestrianTheme.elevatedSurface)
+                            .overlay(Circle().stroke(EquestrianTheme.subtleBorder, lineWidth: 1))
                             .shadow(color: .black.opacity(0.10), radius: 8, x: 0, y: 4)
                     )
             }
@@ -1088,7 +1096,7 @@ public struct HorseDetailSheet: View {
                     .padding(14)
                     .background(
                         RoundedRectangle(cornerRadius: 18)
-                            .fill(Color.white)
+                            .fill(EquestrianTheme.cardSurface)
                             .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 3)
                     )
 
@@ -1118,7 +1126,7 @@ public struct HorseDetailSheet: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(
                         RoundedRectangle(cornerRadius: 18)
-                            .fill(Color.white)
+                            .fill(EquestrianTheme.cardSurface)
                             .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 3)
                     )
 
@@ -1155,7 +1163,7 @@ public struct HorseDetailSheet: View {
                                 .padding(12)
                                 .background(
                                     RoundedRectangle(cornerRadius: 14)
-                                        .fill(Color.white)
+                                        .fill(EquestrianTheme.cardSurface)
                                         .shadow(color: .black.opacity(0.04), radius: 5, x: 0, y: 2)
                                 )
                             }
@@ -1250,7 +1258,7 @@ public struct HorseDetailSheet: View {
                     }
                     .padding(16)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(RoundedRectangle(cornerRadius: 18).fill(Color.white))
+                    .background(RoundedRectangle(cornerRadius: 18).fill(EquestrianTheme.cardSurface))
 
                     AnimalWelfareNoticeBanner()
 
@@ -1306,7 +1314,7 @@ public struct HorseDetailSheet: View {
                             .font(.system(size: 22, weight: .heavy))
                             .foregroundStyle(EquestrianTheme.nopeRed)
                             .frame(width: 56, height: 56)
-                            .background(Circle().fill(Color.white).shadow(radius: 8))
+                            .background(Circle().fill(EquestrianTheme.elevatedSurface).shadow(radius: 8))
                     }
                     .buttonStyle(.plain)
 
@@ -1409,7 +1417,7 @@ public struct DiscoverFilterSheet: View {
                         .tint(EquestrianTheme.tinderRed)
                 }
                 .padding(16)
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color.white))
+                .background(RoundedRectangle(cornerRadius: 16).fill(EquestrianTheme.cardSurface))
 
                 VStack(alignment: .leading, spacing: 14) {
                     Text("Horse Preferences")
@@ -1455,7 +1463,7 @@ public struct DiscoverFilterSheet: View {
                     }
                 }
                 .padding(16)
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color.white))
+                .background(RoundedRectangle(cornerRadius: 16).fill(EquestrianTheme.cardSurface))
 
                 Button {
                     Task {

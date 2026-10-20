@@ -440,6 +440,100 @@ public enum AIEquestrianPersonaEngine {
         return rotationalReplies[abs(turnIndex) % rotationalReplies.count]
     }
 
+    private struct OpenAIChatMessage: Codable, Sendable {
+        let role: String
+        let content: String
+    }
+
+    private struct OpenAIChatRequest: Codable, Sendable {
+        let model: String
+        let messages: [OpenAIChatMessage]
+        let temperature: Double
+    }
+
+    private struct OpenAIChatResponse: Codable, Sendable {
+        struct Choice: Codable, Sendable {
+            struct Message: Codable, Sendable {
+                let content: String?
+            }
+            let message: Message
+        }
+        let choices: [Choice]
+    }
+
+    /// Calls a real OpenAI-compatible LLM chat completions endpoint (`https://text.pollinations.ai/openai`, model `openai-fast` / `gpt-oss-20b`)
+    /// with full conversation context and horse/rider persona, falling back to `generateReply` only if offline.
+    public static func generateLiveLLMReply(
+        for otherHorse: HorseProfileDTO,
+        myHorse: HorseProfileDTO,
+        history: [MessageDTO],
+        latestUserMessage: String
+    ) async -> String {
+        let profile = HorseLifestyleProfile.forHorse(otherHorse)
+        let badgesSummary = profile.badges.map { "\($0.category): \($0.label)" }.joined(separator: "; ")
+        let systemPrompt = """
+        You are \(profile.handlerName) (\(profile.handlerTitle) at \(profile.verifiedBarnName)), chatting on Stallion Match—a Tinder-style mobile app for horses and their owners/riders.
+        Your horse is \(otherHorse.name), a \(otherHorse.age)-year-old \(otherHorse.color) \(otherHorse.breed) \(otherHorse.sex.displayName) (\(String(format: "%.1f", otherHorse.heightHands)) hands) located in \(otherHorse.location.city).
+        Your horse's bio: "\(otherHorse.bio)"
+        Your horse's lifestyle & hobbies: \(badgesSummary).
+        You matched with \(myHorse.name), a \(myHorse.age)-year-old \(myHorse.breed) \(myHorse.sex.displayName) in \(myHorse.location.city).
+        Rules:
+        - Reply directly, naturally, and conversationally to what the user just said (even if they ask casual, funny, or unexpected questions).
+        - Keep your response concise (1 to 3 sentences, max 45 words), warm, friendly, and in-character as \(profile.handlerName) with \(otherHorse.name).
+        """
+
+        var chatMessages: [OpenAIChatMessage] = [
+            OpenAIChatMessage(role: "system", content: systemPrompt)
+        ]
+
+        for msg in history.suffix(8) {
+            let role = (msg.senderHorseID == otherHorse.id) ? "assistant" : "user"
+            chatMessages.append(OpenAIChatMessage(role: role, content: msg.body))
+        }
+        if chatMessages.last?.role != "user" {
+            chatMessages.append(OpenAIChatMessage(role: "user", content: latestUserMessage))
+        }
+
+        let endpointString = ProcessInfo.processInfo.environment["AI_CHAT_API_URL"] ?? "https://text.pollinations.ai/openai"
+        let modelName = ProcessInfo.processInfo.environment["AI_CHAT_MODEL"] ?? "openai-fast"
+
+        if let url = URL(string: endpointString) {
+            var urlRequest = URLRequest(url: url)
+            urlRequest.httpMethod = "POST"
+            urlRequest.timeoutInterval = 8.0
+            urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            if let apiKey = ProcessInfo.processInfo.environment["OPENAI_API_KEY"], !apiKey.isEmpty {
+                urlRequest.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+            }
+
+            let payload = OpenAIChatRequest(
+                model: modelName,
+                messages: chatMessages,
+                temperature: 0.75
+            )
+
+            if let bodyData = try? JSONEncoder().encode(payload) {
+                urlRequest.httpBody = bodyData
+                if let (data, response) = try? await URLSession.shared.data(for: urlRequest),
+                   let http = response as? HTTPURLResponse,
+                   (200...299).contains(http.statusCode),
+                   let decoded = try? JSONDecoder().decode(OpenAIChatResponse.self, from: data),
+                   let text = decoded.choices.first?.message.content?.trimmingCharacters(in: .whitespacesAndNewlines),
+                   !text.isEmpty
+                {
+                    return text
+                }
+            }
+        }
+
+        return generateReply(
+            for: otherHorse,
+            myHorse: myHorse,
+            userMessage: latestUserMessage,
+            turnIndex: history.count
+        )
+    }
+
     public static let quickIcebreakers: [String] = [
         "Want to go for a Saturday morning trail ride? 🌲🐎",
         "I brought Honeycrisp apples & carrots for your horse! 🍎🥕",
@@ -1122,13 +1216,13 @@ public actor MockAPIClient: APIClientProtocol {
         otherHorse: HorseProfileDTO,
         myHorse: HorseProfileDTO,
         userMessage: String
-    ) -> MessageDTO {
+    ) async -> MessageDTO {
         let existingMessages = messagesByConversation[conversationID] ?? []
-        let replyBody = AIEquestrianPersonaEngine.generateReply(
+        let replyBody = await AIEquestrianPersonaEngine.generateLiveLLMReply(
             for: otherHorse,
             myHorse: myHorse,
-            userMessage: userMessage,
-            turnIndex: existingMessages.count
+            history: existingMessages,
+            latestUserMessage: userMessage
         )
         let reply = MessageDTO(
             id: UUID(),

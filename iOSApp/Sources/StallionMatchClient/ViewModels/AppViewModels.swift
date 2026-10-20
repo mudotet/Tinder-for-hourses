@@ -22,6 +22,7 @@ public final class AppStateViewModel {
     public var activeHorseID: UUID?
     public var isAuthenticated: Bool = false
     public var isCheckingSession: Bool = false
+    public var isDarkMode: Bool = false
     public var authErrorMessage: String?
 
     public var activeHorse: HorseProfileDTO? {
@@ -449,7 +450,7 @@ public final class ChatDetailViewModel {
         let client = apiClient
 
         Task { @MainActor [weak self] in
-            try? await Task.sleep(nanoseconds: 850_000_000)
+            try? await Task.sleep(nanoseconds: 450_000_000)
             guard let self else { return }
             let replyMessage: MessageDTO
             if let mock = client as? MockAPIClient {
@@ -460,11 +461,11 @@ public final class ChatDetailViewModel {
                     userMessage: userText
                 )
             } else {
-                let replyBody = AIEquestrianPersonaEngine.generateReply(
+                let replyBody = await AIEquestrianPersonaEngine.generateLiveLLMReply(
                     for: otherHorse,
                     myHorse: myHorse,
-                    userMessage: userText,
-                    turnIndex: self.messages.count
+                    history: self.messages,
+                    latestUserMessage: userText
                 )
                 replyMessage = MessageDTO(
                     id: UUID(),

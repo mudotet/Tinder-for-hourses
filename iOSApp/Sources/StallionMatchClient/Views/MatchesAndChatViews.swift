@@ -37,6 +37,8 @@ public struct MatchesScreen: View {
                                     .padding(.horizontal, 9)
                                     .padding(.vertical, 4)
                                     .background(Capsule().fill(EquestrianTheme.brandGradient))
+
+                                ThemeModeToggleButton(appState: appState)
                             }
                             .padding(.horizontal, 16)
                             .padding(.top, 12)
@@ -147,11 +149,15 @@ public struct MessagesScreen: View {
                             // Top Horizontal "New Matches" Avatar Strip (Tinder-style)
                             if !viewModel.conversations.isEmpty {
                                 VStack(alignment: .leading, spacing: 10) {
-                                    Text("NEW MATCHES")
-                                        .font(.caption.weight(.heavy))
-                                        .tracking(1)
-                                        .foregroundStyle(EquestrianTheme.tinderRed)
-                                        .padding(.horizontal, 16)
+                                    HStack {
+                                        Text("NEW MATCHES")
+                                            .font(.caption.weight(.heavy))
+                                            .tracking(1)
+                                            .foregroundStyle(EquestrianTheme.tinderRed)
+                                        Spacer()
+                                        ThemeModeToggleButton(appState: appState)
+                                    }
+                                    .padding(.horizontal, 16)
 
                                     ScrollView(.horizontal, showsIndicators: false) {
                                         HStack(spacing: 14) {
@@ -257,7 +263,7 @@ public struct MessagesScreen: View {
                                             .padding(14)
                                             .background(
                                                 RoundedRectangle(cornerRadius: 18)
-                                                    .fill(Color.white)
+                                                    .fill(EquestrianTheme.cardSurface)
                                                     .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 3)
                                             )
                                         }
@@ -327,9 +333,22 @@ public struct ChatDetailScreen: View {
                 .overlay(Circle().stroke(EquestrianTheme.tinderRed.opacity(0.4), lineWidth: 1.5))
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(viewModel.conversationSummary.otherHorse.name)
-                        .font(.headline.weight(.bold))
-                        .foregroundStyle(EquestrianTheme.charcoalText)
+                    HStack(spacing: 6) {
+                        Text(viewModel.conversationSummary.otherHorse.name)
+                            .font(.headline.weight(.bold))
+                            .foregroundStyle(EquestrianTheme.charcoalText)
+
+                        HStack(spacing: 3) {
+                            Image(systemName: "sparkles")
+                                .font(.system(size: 8, weight: .heavy))
+                            Text("AI Live")
+                                .font(.system(size: 9, weight: .heavy))
+                        }
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Capsule().fill(EquestrianTheme.softRoseTint))
+                        .foregroundStyle(EquestrianTheme.tinderRed)
+                    }
                     Text("\(viewModel.conversationSummary.otherHorse.breed) • \(viewModel.conversationSummary.otherHorse.location.city)")
                         .font(.caption2)
                         .foregroundStyle(EquestrianTheme.slateSecondary)
@@ -363,7 +382,7 @@ public struct ChatDetailScreen: View {
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
-            .background(Color.white)
+            .background(EquestrianTheme.cardSurface)
 
             Divider()
 
@@ -376,17 +395,61 @@ public struct ChatDetailScreen: View {
             }
 
             if viewModel.state == .loaded {
-                ScrollView {
-                    LazyVStack(spacing: 12) {
-                        AnimalWelfareNoticeBanner()
-                            .padding(.bottom, 6)
+                ScrollViewReader { scrollProxy in
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            AnimalWelfareNoticeBanner()
+                                .padding(.bottom, 6)
 
-                        ForEach(viewModel.messages) { msg in
-                            let isMine = (msg.senderUserID == currentUserID)
-                            HStack(alignment: .bottom, spacing: 8) {
-                                if isMine {
-                                    Spacer(minLength: 52)
-                                } else {
+                            ForEach(viewModel.messages) { msg in
+                                let isMine = (msg.senderUserID == currentUserID)
+                                HStack(alignment: .bottom, spacing: 8) {
+                                    if isMine {
+                                        Spacer(minLength: 52)
+                                    } else {
+                                        HorsePhotoView(
+                                            horseName: viewModel.conversationSummary.otherHorse.name,
+                                            photoURL: viewModel.conversationSummary.otherHorse.photos.first?.url,
+                                            photoIndex: 0
+                                        )
+                                        .frame(width: 28, height: 28)
+                                        .clipShape(Circle())
+                                    }
+
+                                    VStack(alignment: isMine ? .trailing : .leading, spacing: 4) {
+                                        Text(msg.body)
+                                            .font(.subheadline)
+                                            .padding(.horizontal, 14)
+                                            .padding(.vertical, 10)
+                                            .background(
+                                                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                                    .fill(
+                                                        isMine
+                                                            ? AnyShapeStyle(EquestrianTheme.brandGradient)
+                                                            : AnyShapeStyle(EquestrianTheme.cardSurface)
+                                                    )
+                                                    .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+                                            )
+                                            .foregroundStyle(isMine ? .white : EquestrianTheme.charcoalText)
+
+                                        HStack(spacing: 5) {
+                                            Text(msg.createdAt.formatted(date: .omitted, time: .shortened))
+                                                .font(.caption2)
+                                                .foregroundStyle(EquestrianTheme.slateSecondary)
+                                            if isMine, msg.readAt != nil {
+                                                Text("• Read")
+                                                    .font(.caption2.weight(.bold))
+                                                    .foregroundStyle(EquestrianTheme.tinderRed)
+                                            }
+                                        }
+                                    }
+
+                                    if !isMine { Spacer(minLength: 52) }
+                                }
+                            }
+
+                            if viewModel.isOtherHorseTyping {
+                                HStack(alignment: .bottom, spacing: 8) {
                                     HorsePhotoView(
                                         horseName: viewModel.conversationSummary.otherHorse.name,
                                         photoURL: viewModel.conversationSummary.otherHorse.photos.first?.url,
@@ -394,72 +457,44 @@ public struct ChatDetailScreen: View {
                                     )
                                     .frame(width: 28, height: 28)
                                     .clipShape(Circle())
-                                }
 
-                                VStack(alignment: isMine ? .trailing : .leading, spacing: 4) {
-                                    Text(msg.body)
-                                        .font(.subheadline)
-                                        .padding(.horizontal, 14)
-                                        .padding(.vertical, 10)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                                                .fill(
-                                                    isMine
-                                                        ? AnyShapeStyle(EquestrianTheme.brandGradient)
-                                                        : AnyShapeStyle(Color.white)
-                                                )
-                                                .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
-                                        )
-                                        .foregroundStyle(isMine ? .white : EquestrianTheme.charcoalText)
-
-                                    HStack(spacing: 5) {
-                                        Text(msg.createdAt.formatted(date: .omitted, time: .shortened))
-                                            .font(.caption2)
-                                            .foregroundStyle(EquestrianTheme.slateSecondary)
-                                        if isMine, msg.readAt != nil {
-                                            Text("• Read")
-                                                .font(.caption2.weight(.bold))
-                                                .foregroundStyle(EquestrianTheme.tinderRed)
-                                        }
+                                    HStack(spacing: 6) {
+                                        ProgressView()
+                                            .controlSize(.small)
+                                            .tint(EquestrianTheme.tinderRed)
+                                        Text("\(viewModel.conversationSummary.otherHorse.name) is typing an AI reply...")
+                                            .font(.caption.weight(.semibold))
+                                            .foregroundStyle(EquestrianTheme.tinderRed)
                                     }
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 10)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                            .fill(EquestrianTheme.softRoseTint)
+                                    )
+                                    Spacer()
                                 }
-
-                                if !isMine { Spacer(minLength: 52) }
+                                .transition(.scale.combined(with: .opacity))
                             }
+
+                            Color.clear
+                                .frame(height: 1)
+                                .id("chatBottomAnchor")
                         }
-
-                        if viewModel.isOtherHorseTyping {
-                            HStack(alignment: .bottom, spacing: 8) {
-                                HorsePhotoView(
-                                    horseName: viewModel.conversationSummary.otherHorse.name,
-                                    photoURL: viewModel.conversationSummary.otherHorse.photos.first?.url,
-                                    photoIndex: 0
-                                )
-                                .frame(width: 28, height: 28)
-                                .clipShape(Circle())
-
-                                HStack(spacing: 6) {
-                                    ProgressView()
-                                        .controlSize(.small)
-                                        .tint(EquestrianTheme.tinderRed)
-                                    Text("\(viewModel.conversationSummary.otherHorse.name) is typing an AI reply...")
-                                        .font(.caption.weight(.semibold))
-                                        .foregroundStyle(EquestrianTheme.tinderRed)
-                                }
-                                .padding(.horizontal, 14)
-                                .padding(.vertical, 10)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 18, style: .continuous)
-                                        .fill(EquestrianTheme.softRoseTint)
-                                )
-                                Spacer()
-                            }
-                            .transition(.scale.combined(with: .opacity))
+                        .padding(16)
+                    }
+                    .background(EquestrianTheme.screenBackground)
+                    .onChange(of: viewModel.messages.count) { _, _ in
+                        withAnimation(.easeOut(duration: 0.25)) {
+                            scrollProxy.scrollTo("chatBottomAnchor", anchor: .bottom)
                         }
                     }
-                    .padding(16)
+                    .onChange(of: viewModel.isOtherHorseTyping) { _, _ in
+                        withAnimation(.easeOut(duration: 0.25)) {
+                            scrollProxy.scrollTo("chatBottomAnchor", anchor: .bottom)
+                        }
+                    }
                 }
-                .background(EquestrianTheme.screenBackground)
             } else {
                 ScreenStateContainerView(state: viewModel.state) {
                     Task { await viewModel.loadMessages() }
@@ -496,7 +531,7 @@ public struct ChatDetailScreen: View {
                 .padding(.top, 8)
                 .padding(.bottom, 2)
             }
-            .background(Color.white)
+            .background(EquestrianTheme.cardSurface)
 
             // Mobile Chat Input Pill Bar
             HStack(spacing: 10) {
@@ -505,13 +540,17 @@ public struct ChatDetailScreen: View {
                     text: $viewModel.draftText
                 )
                 .textFieldStyle(.plain)
+                .foregroundStyle(EquestrianTheme.charcoalText)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 10)
                 .background(
                     Capsule()
                         .fill(EquestrianTheme.screenBackground)
-                        .overlay(Capsule().stroke(Color.gray.opacity(0.22), lineWidth: 1))
+                        .overlay(Capsule().stroke(EquestrianTheme.subtleBorder, lineWidth: 1))
                 )
+                .onSubmit {
+                    Task { await viewModel.sendMessage() }
+                }
                 .accessibilityIdentifier("chatMessageInputField")
 
                 Button {
@@ -536,7 +575,7 @@ public struct ChatDetailScreen: View {
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
-            .background(Color.white)
+            .background(EquestrianTheme.cardSurface)
         }
         #if os(iOS)
         .toolbar(.hidden, for: .navigationBar)

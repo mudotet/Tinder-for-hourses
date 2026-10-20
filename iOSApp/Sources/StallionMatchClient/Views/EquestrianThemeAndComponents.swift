@@ -7,7 +7,33 @@ import UIKit
 #endif
 
 public enum EquestrianTheme {
-    // Iconic Tinder Red & White Mobile Palette
+    // Helper for dynamic Light / Dark adaptive colors
+    private static func adaptive(
+        light: (CGFloat, CGFloat, CGFloat),
+        dark: (CGFloat, CGFloat, CGFloat)
+    ) -> Color {
+        #if canImport(AppKit)
+        return Color(
+            nsColor: NSColor(name: nil) { appearance in
+                let isDark = appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+                let c = isDark ? dark : light
+                return NSColor(srgbRed: c.0, green: c.1, blue: c.2, alpha: 1.0)
+            }
+        )
+        #elseif canImport(UIKit)
+        return Color(
+            uiColor: UIColor { traits in
+                let isDark = traits.userInterfaceStyle == .dark
+                let c = isDark ? dark : light
+                return UIColor(red: c.0, green: c.1, blue: c.2, alpha: 1.0)
+            }
+        )
+        #else
+        return Color(red: light.0, green: light.1, blue: light.2)
+        #endif
+    }
+
+    // Iconic Tinder Red & Coral Brand Accents (Vibrant in both Light & Dark Mode)
     public static let tinderRed = Color(red: 0.996, green: 0.235, blue: 0.447)      // #FE3C72
     public static let tinderCoral = Color(red: 1.000, green: 0.376, blue: 0.212)    // #FF6036
     public static let deepCrimson = Color(red: 0.890, green: 0.110, blue: 0.290)    // #E31C4A
@@ -16,10 +42,36 @@ public enum EquestrianTheme {
     public static let superLikeBlue = Color(red: 0.145, green: 0.706, blue: 1.000)  // #25B4FF
     public static let boostPurple = Color(red: 0.659, green: 0.235, blue: 0.969)    // #A83CF7
     public static let rewindGold = Color(red: 0.980, green: 0.741, blue: 0.141)     // #FABD24
-    public static let charcoalText = Color(red: 0.110, green: 0.114, blue: 0.141)   // #1C1D24
-    public static let slateSecondary = Color(red: 0.455, green: 0.475, blue: 0.529) // #747987
-    public static let screenBackground = Color(red: 0.980, green: 0.980, blue: 0.992)
-    public static let softRoseTint = Color(red: 1.000, green: 0.945, blue: 0.961)
+
+    // Dynamic Light / Dark Mode Surfaces & Typography
+    public static let charcoalText = adaptive(
+        light: (0.110, 0.114, 0.141), // #1C1D24
+        dark:  (0.965, 0.969, 0.980)  // #F6F7FA
+    )
+    public static let slateSecondary = adaptive(
+        light: (0.455, 0.475, 0.529), // #747987
+        dark:  (0.620, 0.647, 0.706)  // #9EA5B4
+    )
+    public static let screenBackground = adaptive(
+        light: (0.973, 0.976, 0.988), // #F8F9FC
+        dark:  (0.063, 0.071, 0.090)  // #101217 (Tinder Obsidian Dark)
+    )
+    public static let cardSurface = adaptive(
+        light: (1.000, 1.000, 1.000), // #FFFFFF
+        dark:  (0.114, 0.125, 0.157)  // #1D2028 (Elevated Dark Card)
+    )
+    public static let elevatedSurface = adaptive(
+        light: (1.000, 1.000, 1.000), // #FFFFFF
+        dark:  (0.149, 0.165, 0.204)  // #262A34 (Floating Action Circle Dark)
+    )
+    public static let softRoseTint = adaptive(
+        light: (1.000, 0.941, 0.957), // #FFF0F4
+        dark:  (0.220, 0.110, 0.153)  // #381C27 (Dark Crimson Tint)
+    )
+    public static let subtleBorder = adaptive(
+        light: (0.900, 0.906, 0.929),
+        dark:  (0.200, 0.220, 0.267)
+    )
 
     public static let brandGradient = LinearGradient(
         colors: [tinderRed, tinderCoral],
@@ -32,8 +84,38 @@ public enum EquestrianTheme {
     public static let pastureSage = likeGreen
     public static let warmTerracotta = nopeRed
     public static let ribbonGold = rewindGold
-    public static let parchmentBackground = Color.white
-    public static let cardSurface = Color.white
+    public static let parchmentBackground = screenBackground
+}
+
+/// Compact Dark / Light mode toggle button used across mobile headers.
+public struct ThemeModeToggleButton: View {
+    @Bindable public var appState: AppStateViewModel
+
+    public init(appState: AppStateViewModel) {
+        self.appState = appState
+    }
+
+    public var body: some View {
+        Button {
+            withAnimation(.spring(response: 0.32, dampingFraction: 0.78)) {
+                appState.isDarkMode.toggle()
+            }
+        } label: {
+            Image(systemName: appState.isDarkMode ? "sun.max.fill" : "moon.stars.fill")
+                .font(.system(size: 15, weight: .bold))
+                .foregroundStyle(appState.isDarkMode ? EquestrianTheme.rewindGold : EquestrianTheme.tinderRed)
+                .frame(width: 36, height: 36)
+                .background(
+                    Circle()
+                        .fill(EquestrianTheme.elevatedSurface)
+                        .overlay(Circle().stroke(EquestrianTheme.subtleBorder, lineWidth: 1))
+                        .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 2)
+                )
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("themeModeToggleButton")
+        .accessibilityLabel(appState.isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode")
+    }
 }
 
 /// High-performance local & remote horse photo view with automatic fallback to bundled demo photography.

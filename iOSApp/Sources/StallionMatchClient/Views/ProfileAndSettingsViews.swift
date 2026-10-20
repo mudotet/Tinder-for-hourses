@@ -20,6 +20,12 @@ public struct ProfileAndSettingsScreen: View {
                 VStack(spacing: 18) {
                     // Tinder-style Profile Hero Card
                     VStack(spacing: 12) {
+                        HStack {
+                            Spacer()
+                            ThemeModeToggleButton(appState: appState)
+                        }
+                        .padding(.horizontal, 16)
+
                         ZStack(alignment: .bottomTrailing) {
                             HorsePhotoView(
                                 horseName: appState.activeHorse?.name ?? "Apollo",
@@ -43,7 +49,7 @@ public struct ProfileAndSettingsScreen: View {
                                         .foregroundStyle(.white)
                                         .frame(width: 32, height: 32)
                                         .background(Circle().fill(EquestrianTheme.brandGradient))
-                                        .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                                        .overlay(Circle().stroke(EquestrianTheme.cardSurface, lineWidth: 2))
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -72,12 +78,58 @@ public struct ProfileAndSettingsScreen: View {
                         }
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 22)
+                    .padding(.vertical, 18)
                     .background(
                         RoundedRectangle(cornerRadius: 24)
-                            .fill(Color.white)
+                            .fill(EquestrianTheme.cardSurface)
                             .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 4)
                     )
+
+                    // Appearance (Light Mode / Dark Mode) Card
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("APPEARANCE")
+                            .font(.caption.weight(.heavy))
+                            .tracking(1)
+                            .foregroundStyle(EquestrianTheme.tinderRed)
+
+                        HStack(spacing: 12) {
+                            Image(systemName: appState.isDarkMode ? "moon.stars.fill" : "sun.max.fill")
+                                .font(.title3)
+                                .foregroundStyle(EquestrianTheme.tinderRed)
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(appState.isDarkMode ? "Dark Mode Active" : "Light Mode Active")
+                                    .font(.subheadline.weight(.bold))
+                                    .foregroundStyle(EquestrianTheme.charcoalText)
+                                Text("Switch between Tinder Red & White Light Mode and Dark Mode")
+                                    .font(.caption2)
+                                    .foregroundStyle(EquestrianTheme.slateSecondary)
+                            }
+
+                            Spacer()
+
+                            Toggle(
+                                "",
+                                isOn: Binding(
+                                    get: { appState.isDarkMode },
+                                    set: { newValue in
+                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                            appState.isDarkMode = newValue
+                                        }
+                                    }
+                                )
+                            )
+                            .labelsHidden()
+                            .tint(EquestrianTheme.tinderRed)
+                            .accessibilityIdentifier("darkModeSettingsToggle")
+                        }
+                        .padding(16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 18)
+                                .fill(EquestrianTheme.cardSurface)
+                                .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
+                        )
+                    }
 
                     // My Horses Section
                     VStack(alignment: .leading, spacing: 12) {
@@ -163,7 +215,7 @@ public struct ProfileAndSettingsScreen: View {
                             .padding(12)
                             .background(
                                 RoundedRectangle(cornerRadius: 18)
-                                    .fill(Color.white)
+                                    .fill(EquestrianTheme.cardSurface)
                                     .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
                             )
                         }
@@ -215,7 +267,7 @@ public struct ProfileAndSettingsScreen: View {
                             .padding(16)
                             .background(
                                 RoundedRectangle(cornerRadius: 18)
-                                    .fill(Color.white)
+                                    .fill(EquestrianTheme.cardSurface)
                                     .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
                             )
                         }
@@ -237,7 +289,7 @@ public struct ProfileAndSettingsScreen: View {
                                     .foregroundStyle(EquestrianTheme.charcoalText)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 12)
-                                    .background(RoundedRectangle(cornerRadius: 14).fill(Color.white))
+                                    .background(RoundedRectangle(cornerRadius: 14).fill(EquestrianTheme.cardSurface))
                             }
                             .buttonStyle(.plain)
 
@@ -249,7 +301,7 @@ public struct ProfileAndSettingsScreen: View {
                                     .foregroundStyle(EquestrianTheme.charcoalText)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 12)
-                                    .background(RoundedRectangle(cornerRadius: 14).fill(Color.white))
+                                    .background(RoundedRectangle(cornerRadius: 14).fill(EquestrianTheme.cardSurface))
                             }
                             .buttonStyle(.plain)
                         }
@@ -269,7 +321,7 @@ public struct ProfileAndSettingsScreen: View {
                                 .padding(.vertical, 13)
                                 .background(
                                     Capsule()
-                                        .fill(Color.white)
+                                        .fill(EquestrianTheme.cardSurface)
                                         .overlay(Capsule().stroke(EquestrianTheme.tinderRed.opacity(0.35), lineWidth: 1.5))
                                 )
                         }
@@ -697,11 +749,11 @@ public struct MainTabView: View {
             .padding(.horizontal, 12)
             .padding(.bottom, 6)
             .background(
-                Color.white
+                EquestrianTheme.cardSurface
                     .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: -3)
             )
         }
-        .preferredColorScheme(.light)
+        .preferredColorScheme(appState.isDarkMode ? .dark : .light)
         .task {
             await matchesAndConversationsViewModel.refreshAll()
         }
@@ -723,7 +775,7 @@ public struct StallionMatchRootView: View {
                 AuthRootView(appState: appState)
             }
         }
-        .preferredColorScheme(.light)
+        .preferredColorScheme(appState.isDarkMode ? .dark : .light)
     }
 }
 

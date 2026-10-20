@@ -82,8 +82,8 @@ public struct AuthRootView: View {
                             TextField("Owner / Handler Name", text: $displayName)
                                 .textFieldStyle(.plain)
                                 .padding(13)
-                                .background(RoundedRectangle(cornerRadius: 14).fill(Color.white))
-                                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.gray.opacity(0.2), lineWidth: 1))
+                                .background(RoundedRectangle(cornerRadius: 14).fill(EquestrianTheme.cardSurface))
+                                .overlay(RoundedRectangle(cornerRadius: 14).stroke(EquestrianTheme.subtleBorder, lineWidth: 1))
                                 .accessibilityIdentifier("displayNameField")
                         }
 
@@ -91,15 +91,15 @@ public struct AuthRootView: View {
                             .textFieldStyle(.plain)
                             .autocorrectionDisabled()
                             .padding(13)
-                            .background(RoundedRectangle(cornerRadius: 14).fill(Color.white))
-                            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.gray.opacity(0.2), lineWidth: 1))
+                            .background(RoundedRectangle(cornerRadius: 14).fill(EquestrianTheme.cardSurface))
+                            .overlay(RoundedRectangle(cornerRadius: 14).stroke(EquestrianTheme.subtleBorder, lineWidth: 1))
                             .accessibilityIdentifier("emailField")
 
                         SecureField("Password (min 8 characters)", text: $password)
                             .textFieldStyle(.plain)
                             .padding(13)
-                            .background(RoundedRectangle(cornerRadius: 14).fill(Color.white))
-                            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.gray.opacity(0.2), lineWidth: 1))
+                            .background(RoundedRectangle(cornerRadius: 14).fill(EquestrianTheme.cardSurface))
+                            .overlay(RoundedRectangle(cornerRadius: 14).stroke(EquestrianTheme.subtleBorder, lineWidth: 1))
                             .accessibilityIdentifier("passwordField")
                     }
 
@@ -137,7 +137,7 @@ public struct AuthRootView: View {
                         .padding(.vertical, 13)
                         .background(
                             Capsule()
-                                .fill(Color.white)
+                                .fill(EquestrianTheme.cardSurface)
                                 .overlay(Capsule().stroke(EquestrianTheme.tinderRed, lineWidth: 1.5))
                         )
                     }
