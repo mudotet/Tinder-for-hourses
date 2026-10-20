@@ -16,6 +16,7 @@ public struct DiscoverScreen: View {
     @State private var selectedHorseForDetail: HorseProfileDTO?
     @State private var showFilterSheet = false
     @State private var showCreateHorseSheet = false
+    @State private var showHorseSwitcherPopover = false
 
     public init(appState: AppStateViewModel, viewModel: DiscoverViewModel) {
         self.appState = appState
@@ -203,53 +204,25 @@ public struct DiscoverScreen: View {
     }
 
     private var mobileTopHeaderBar: some View {
-        HStack(spacing: 12) {
-            HStack(spacing: 6) {
+        HStack(alignment: .center, spacing: 8) {
+            // Left: Horsy Brand Logo
+            HStack(spacing: 5) {
                 Image(systemName: "flame.fill")
-                    .font(.system(size: 24, weight: .bold))
+                    .font(.system(size: 22, weight: .bold))
                     .foregroundStyle(EquestrianTheme.brandGradient)
                 Text("horsy")
-                    .font(.system(size: 25, weight: .heavy, design: .rounded))
+                    .font(.system(size: 24, weight: .heavy, design: .rounded))
                     .foregroundStyle(EquestrianTheme.brandGradient)
+                    .lineLimit(1)
             }
+            .fixedSize(horizontal: true, vertical: false)
 
-            Spacer()
+            Spacer(minLength: 8)
 
-            // Deck Counter Pill
-            if !viewModel.cards.isEmpty {
-                HStack(spacing: 4) {
-                    Image(systemName: "sparkles")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(EquestrianTheme.tinderRed)
-                    Text("\(viewModel.cards.count) nearby")
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(EquestrianTheme.slateSecondary)
-                }
-                .padding(.horizontal, 9)
-                .padding(.vertical, 5)
-                .background(Capsule().fill(EquestrianTheme.softRoseTint))
-            }
-
+            // Right: Active Horse Profile Pill + Theme Toggle + Filters (all 36pt tall on 1 line)
             if let active = appState.activeHorse {
-                Menu {
-                    ForEach(appState.myHorses) { horse in
-                        Button {
-                            appState.activeHorseID = horse.id
-                        } label: {
-                            HStack {
-                                Text("\(horse.name) • \(horse.breed)")
-                                if horse.id == active.id {
-                                    Image(systemName: "checkmark")
-                                }
-                            }
-                        }
-                    }
-                    Divider()
-                    Button {
-                        showCreateHorseSheet = true
-                    } label: {
-                        Label("Add Horse Profile", systemImage: "plus")
-                    }
+                Button {
+                    showHorseSwitcherPopover.toggle()
                 } label: {
                     HStack(spacing: 6) {
                         HorsePhotoView(
@@ -261,16 +234,17 @@ public struct DiscoverScreen: View {
                         .clipShape(Circle())
 
                         Text(active.name)
-                            .font(.caption.weight(.bold))
+                            .font(.subheadline.weight(.bold))
                             .foregroundStyle(EquestrianTheme.charcoalText)
+                            .lineLimit(1)
 
                         Image(systemName: "chevron.down")
-                            .font(.system(size: 9, weight: .bold))
+                            .font(.system(size: 10, weight: .bold))
                             .foregroundStyle(EquestrianTheme.tinderRed)
                     }
-                    .padding(.leading, 5)
-                    .padding(.trailing, 10)
-                    .padding(.vertical, 5)
+                    .padding(.leading, 6)
+                    .padding(.trailing, 11)
+                    .frame(height: 36)
                     .background(
                         Capsule()
                             .fill(EquestrianTheme.elevatedSurface)
@@ -279,6 +253,64 @@ public struct DiscoverScreen: View {
                     )
                 }
                 .buttonStyle(.plain)
+                .fixedSize(horizontal: true, vertical: false)
+                .popover(isPresented: $showHorseSwitcherPopover, arrowEdge: .bottom) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("ACTIVE HORSE")
+                            .font(.system(size: 10, weight: .heavy))
+                            .foregroundStyle(EquestrianTheme.tinderRed)
+                            .padding(.horizontal, 10)
+                            .padding(.top, 6)
+
+                        ForEach(appState.myHorses) { horse in
+                            Button {
+                                appState.activeHorseID = horse.id
+                                showHorseSwitcherPopover = false
+                            } label: {
+                                HStack(spacing: 8) {
+                                    HorsePhotoView(
+                                        horseName: horse.name,
+                                        photoURL: horse.photos.first?.url,
+                                        photoIndex: 0
+                                    )
+                                    .frame(width: 26, height: 26)
+                                    .clipShape(Circle())
+
+                                    Text("\(horse.name) • \(horse.breed)")
+                                        .font(.caption.weight(.bold))
+                                        .foregroundStyle(EquestrianTheme.charcoalText)
+
+                                    Spacer()
+
+                                    if horse.id == active.id {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundStyle(EquestrianTheme.tinderRed)
+                                    }
+                                }
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 6)
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                        }
+
+                        Divider()
+
+                        Button {
+                            showHorseSwitcherPopover = false
+                            showCreateHorseSheet = true
+                        } label: {
+                            Label("Add Horse Profile", systemImage: "plus.circle.fill")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(EquestrianTheme.tinderRed)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 6)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(8)
+                    .frame(width: 220)
+                }
             } else {
                 Button {
                     showCreateHorseSheet = true
@@ -287,10 +319,11 @@ public struct DiscoverScreen: View {
                         .font(.caption.weight(.bold))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
+                        .frame(height: 36)
                         .background(Capsule().fill(EquestrianTheme.brandGradient))
                 }
                 .buttonStyle(.plain)
+                .fixedSize(horizontal: true, vertical: false)
                 .accessibilityIdentifier("createFirstHorseButton")
             }
 
@@ -300,7 +333,7 @@ public struct DiscoverScreen: View {
                 showFilterSheet = true
             } label: {
                 Image(systemName: "slider.horizontal.3")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 15, weight: .bold))
                     .foregroundStyle(EquestrianTheme.charcoalText)
                     .frame(width: 36, height: 36)
                     .background(
@@ -313,8 +346,9 @@ public struct DiscoverScreen: View {
             .buttonStyle(.plain)
             .accessibilityIdentifier("openFiltersButton")
         }
+        .frame(height: 40)
         .padding(.horizontal, 16)
-        .padding(.top, 8)
+        .padding(.top, 6)
     }
 
     private func tinderBottomActionButtons(topCard: HorseProfileDTO) -> some View {

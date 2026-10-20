@@ -296,6 +296,7 @@ public struct ChatDetailScreen: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var showReportSheet = false
+    @State private var showSafetyActionsDialog = false
     @State private var selectedReason: ReportReason = .inappropriateContent
     @State private var reportDetails = ""
 
@@ -349,22 +350,8 @@ public struct ChatDetailScreen: View {
 
                 Spacer()
 
-                Menu {
-                    Button(role: .destructive) {
-                        showReportSheet = true
-                    } label: {
-                        Label("Report Horse / Conversation", systemImage: "flag.fill")
-                    }
-
-                    Button(role: .destructive) {
-                        Task {
-                            try? await viewModel.blockOtherOwner(reason: "Blocked from chat")
-                            onConversationModerated()
-                            dismiss()
-                        }
-                    } label: {
-                        Label("Block Owner", systemImage: "hand.raised.fill")
-                    }
+                Button {
+                    showSafetyActionsDialog = true
                 } label: {
                     Image(systemName: "shield.lefthalf.filled")
                         .font(.system(size: 18, weight: .semibold))
@@ -372,6 +359,23 @@ public struct ChatDetailScreen: View {
                         .frame(width: 34, height: 34)
                 }
                 .buttonStyle(.plain)
+                .confirmationDialog(
+                    "Safety & Moderation",
+                    isPresented: $showSafetyActionsDialog,
+                    titleVisibility: .visible
+                ) {
+                    Button("Report Horse / Conversation", role: .destructive) {
+                        showReportSheet = true
+                    }
+                    Button("Block Owner", role: .destructive) {
+                        Task {
+                            try? await viewModel.blockOtherOwner(reason: "Blocked from chat")
+                            onConversationModerated()
+                            dismiss()
+                        }
+                    }
+                    Button("Cancel", role: .cancel) {}
+                }
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 10)

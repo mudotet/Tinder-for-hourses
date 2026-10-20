@@ -20,8 +20,20 @@ public struct ProfileAndSettingsScreen: View {
                 VStack(spacing: 18) {
                     // Tinder-style Profile Hero Card
                     VStack(spacing: 12) {
-                        HStack {
+                        HStack(alignment: .center) {
+                            HStack(spacing: 5) {
+                                Image(systemName: "flame.fill")
+                                    .font(.system(size: 20, weight: .bold))
+                                    .foregroundStyle(EquestrianTheme.brandGradient)
+                                Text("horsy")
+                                    .font(.system(size: 22, weight: .heavy, design: .rounded))
+                                    .foregroundStyle(EquestrianTheme.brandGradient)
+                                    .lineLimit(1)
+                            }
+                            .fixedSize(horizontal: true, vertical: false)
+
                             Spacer()
+
                             ThemeModeToggleButton(appState: appState)
                         }
                         .padding(.horizontal, 16)
