@@ -42,7 +42,7 @@ public struct HorseLifestyleBadge: Sendable, Equatable, Identifiable {
     }
 }
 
-public struct HorseLifestyleProfile: Sendable, Equatable {
+public struct HorseLifestyleProfile: Sendable {
     public let handlerName: String
     public let handlerTitle: String
     public let verifiedBarnName: String
@@ -1274,23 +1274,5 @@ public actor MockAPIClient: APIClientProtocol {
 
     public func unblockUser(blockedUserID: UUID) async throws {
         blocks.removeAll { $0.blockedUserID == blockedUserID }
-    }
-
-    public func fetchTermsOfUse() async throws -> LegalDocumentDTO {
-        LegalDocumentDTO(
-            title: "Stallion Match Terms of Use",
-            version: SafetyConstants.currentTermsVersion,
-            effectiveDate: "2026-01-01",
-            contentMarkdown: "All users must comply with local animal-welfare laws. No in-app payments or animal sales."
-        )
-    }
-
-    public func fetchPrivacyPolicy() async throws -> LegalDocumentDTO {
-        LegalDocumentDTO(
-            title: "Stallion Match Privacy Policy",
-            version: SafetyConstants.currentTermsVersion,
-            effectiveDate: "2026-01-01",
-            contentMarkdown: "Location is coarsened to city level (~1.1 km). Account deletion removes all data."
-        )
     }
 }
