@@ -338,16 +338,9 @@ public struct ChatDetailScreen: View {
                             .font(.headline.weight(.bold))
                             .foregroundStyle(EquestrianTheme.charcoalText)
 
-                        HStack(spacing: 3) {
-                            Image(systemName: "sparkles")
-                                .font(.system(size: 8, weight: .heavy))
-                            Text("AI Live")
-                                .font(.system(size: 9, weight: .heavy))
-                        }
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(Capsule().fill(EquestrianTheme.softRoseTint))
-                        .foregroundStyle(EquestrianTheme.tinderRed)
+                        Circle()
+                            .fill(EquestrianTheme.likeGreen)
+                            .frame(width: 8, height: 8)
                     }
                     Text("\(viewModel.conversationSummary.otherHorse.breed) • \(viewModel.conversationSummary.otherHorse.location.city)")
                         .font(.caption2)
@@ -458,23 +451,11 @@ public struct ChatDetailScreen: View {
                                     .frame(width: 28, height: 28)
                                     .clipShape(Circle())
 
-                                    HStack(spacing: 6) {
-                                        ProgressView()
-                                            .controlSize(.small)
-                                            .tint(EquestrianTheme.tinderRed)
-                                        Text("\(viewModel.conversationSummary.otherHorse.name) is typing an AI reply...")
-                                            .font(.caption.weight(.semibold))
-                                            .foregroundStyle(EquestrianTheme.tinderRed)
-                                    }
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 10)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 18, style: .continuous)
-                                            .fill(EquestrianTheme.softRoseTint)
-                                    )
+                                    AnimatedTypingDotsBubble()
+
                                     Spacer()
                                 }
-                                .transition(.scale.combined(with: .opacity))
+                                .transition(.scale(scale: 0.85, anchor: .bottomLeading).combined(with: .opacity))
                             }
 
                             Color.clear
@@ -613,6 +594,40 @@ public struct ChatDetailScreen: View {
         .task {
             await viewModel.loadMessages()
         }
+    }
+}
+
+/// Real-time 60fps bouncing three-dots typing indicator bubble (Tinder / iMessage style).
+public struct AnimatedTypingDotsBubble: View {
+    public init() {}
+
+    public var body: some View {
+        TimelineView(.animation) { context in
+            let t = context.date.timeIntervalSinceReferenceDate
+            HStack(spacing: 6) {
+                ForEach(0..<3, id: \.self) { index in
+                    let phase = t * 6.2 - Double(index) * 0.85
+                    let wave = max(0, sin(phase))
+                    Circle()
+                        .fill(EquestrianTheme.tinderRed.opacity(0.45 + 0.55 * wave))
+                        .frame(width: 8, height: 8)
+                        .scaleEffect(0.88 + 0.24 * wave)
+                        .offset(y: -4.5 * wave)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 13)
+            .background(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(EquestrianTheme.cardSurface)
+                    .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .stroke(EquestrianTheme.subtleBorder, lineWidth: 0.8)
+            )
+        }
+        .accessibilityLabel("Typing a message")
     }
 }
 
