@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+
+# Swift Package Manager & Xcode
+.build/
+.swiftpm/
+DerivedData/
+build/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+xcuserdata/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Environment & Secrets
+.env
+.env.local
+.env.development
+.env.test
+*.pem
+*.p8
+*.key
+
+# Local Storage Uploads (Dev)
+Server/Public/uploads/
+Server/Storage/
