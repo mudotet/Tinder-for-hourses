@@ -33,7 +33,7 @@ public struct AuthRootView: View {
                                 .foregroundStyle(.white)
                         }
 
-                        Text("stallion")
+                        Text("horsy")
                             .font(.system(size: 36, weight: .heavy, design: .rounded))
                             .foregroundStyle(EquestrianTheme.brandGradient)
 
@@ -222,7 +222,7 @@ public struct TermsOfUseView: View {
     public var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text("Stallion Match Terms of Use")
+                Text("Horsy Terms of Use")
                     .font(.title2.weight(.bold))
                     .foregroundStyle(EquestrianTheme.tinderRed)
 
@@ -232,10 +232,10 @@ public struct TermsOfUseView: View {
 
                 Text("""
                 1. Eligibility & Conduct
-                You must be at least 18 years old and the lawful owner or authorized handler of any horse profile you list on Stallion Match. Zero tolerance applies to abusive, fraudulent, or objectionable user-generated content.
+                You must be at least 18 years old and the lawful owner or authorized handler of any horse profile you list on Horsy. Zero tolerance applies to abusive, fraudulent, or objectionable user-generated content.
 
                 2. No In-App Payments or Animal Sales
-                Stallion Match is a discovery and communication platform for trail riding companions, stablemates, and breeding inquiries. No financial transactions, stud fee payments, or animal sales are processed in the application.
+                Horsy is a discovery and communication platform for trail riding companions, stablemates, and breeding inquiries. No financial transactions, stud fee payments, or animal sales are processed in the application.
 
                 3. Animal Welfare & Veterinary Compliance
                 Users are solely responsible for verifying health certificates, negative Coggins tests, vaccination records, and complying with all local, state, and federal animal-welfare and equine transport regulations.
@@ -266,7 +266,7 @@ public struct PrivacyPolicyView: View {
     public var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text("Stallion Match Privacy Policy")
+                Text("Horsy Privacy Policy")
                     .font(.title2.weight(.bold))
                     .foregroundStyle(EquestrianTheme.tinderRed)
 

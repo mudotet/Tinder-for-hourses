@@ -43,7 +43,7 @@ struct StallionMatchiOSApp: App {
     }
 
     var body: some Scene {
-        WindowGroup("Stallion Match") {
+        WindowGroup("Horsy") {
             StallionMatchRootView(appState: appState)
                 #if os(macOS)
                 .frame(minWidth: 393, idealWidth: 402, maxWidth: 430, minHeight: 780, idealHeight: 852, maxHeight: 920)

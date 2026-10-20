@@ -208,7 +208,7 @@ public struct DiscoverScreen: View {
                 Image(systemName: "flame.fill")
                     .font(.system(size: 24, weight: .bold))
                     .foregroundStyle(EquestrianTheme.brandGradient)
-                Text("stallion")
+                Text("horsy")
                     .font(.system(size: 25, weight: .heavy, design: .rounded))
                     .foregroundStyle(EquestrianTheme.brandGradient)
             }

@@ -6,7 +6,7 @@ PORT="${PORT:-18080}"
 BASE_URL="http://127.0.0.1:${PORT}/api/v1"
 
 echo "🐎 =================================================================="
-echo "🐎  STALLION MATCH — FULL-STACK END-TO-END LIVE DEMO"
+echo "🐎  HORSY — FULL-STACK END-TO-END LIVE DEMO"
 echo "🐎 =================================================================="
 
 # Ensure Postgres container is running

@@ -1,6 +1,6 @@
-# Stallion Match
+# Horsy (Tinder for Horses)
 
-A full-stack Swift matching application for horses and their owners/handlers. Horse owners create profiles for their horses, discover nearby horses by discipline, breed, age, sex, and connection goals, match on mutual right-swipes, and chat in real time over WebSockets.
+**Horsy** is a full-stack Swift matching application for horses and their owners/handlers. Horse owners create profiles for their horses, discover nearby horses by discipline, breed, age, sex, and connection goals, match on mutual right-swipes, and chat in real time.
 
 ---
 
