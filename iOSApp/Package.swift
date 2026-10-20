@@ -18,6 +18,10 @@ let package = Package(
         .library(
             name: "StallionMatchClient",
             targets: ["StallionMatchClient"]
+        ),
+        .executable(
+            name: "StallionMatchDesktop",
+            targets: ["StallionMatchDesktop"]
         )
     ],
     dependencies: [
@@ -35,6 +39,17 @@ let package = Package(
                     "-Xfrontend", "-load-plugin-library",
                     "-Xfrontend", previewsPluginPath
                 ])
+            ]
+        ),
+        .executableTarget(
+            name: "StallionMatchDesktop",
+            dependencies: [
+                "StallionMatchClient",
+                .product(name: "SharedModels", package: "SharedModels")
+            ],
+            path: "App",
+            swiftSettings: [
+                .enableUpcomingFeature("StrictConcurrency")
             ]
         ),
         .testTarget(

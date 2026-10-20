@@ -135,6 +135,29 @@ public struct AuthRootView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                     .accessibilityIdentifier("signInWithAppleButton")
 
+                    Button {
+                        Task {
+                            isSubmitting = true
+                            await appState.login(email: "demo@stallionmatch.app", password: "StablePass123")
+                            if !appState.isAuthenticated {
+                                await appState.signUp(
+                                    email: "demo@stallionmatch.app",
+                                    password: "StablePass123",
+                                    displayName: "Clara Vance"
+                                )
+                            }
+                            isSubmitting = false
+                        }
+                    } label: {
+                        Label("Enter Live Demo (Clara & Starlight)", systemImage: "sparkles")
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(EquestrianTheme.pastureSage)
+                    .accessibilityIdentifier("quickDemoLoginButton")
+
                     AnimalWelfareNoticeBanner()
 
                     HStack(spacing: 16) {
